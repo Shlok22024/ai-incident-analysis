@@ -1,11 +1,13 @@
 # Summary Stats
 
-This file will be generated after the data pipeline is implemented and run.
+- Total incidents analyzed: 1,581
+- Date range covered: 2010 to 2026
+- Source snapshot date: 2026-07-27
+- Top recreated application area: Language/vision model (477 incidents, 30.2%)
+- Top recreated ethics issue: Unethical use (illegal use) (623 incidents, 39.4%)
+- Pre-2023 incident count: 511
+- 2023-and-later incident count: 1,070
+- Biggest tracked post-2023 share increase: Misinformation or manipulation (+46.1 percentage points)
 
-Planned fields:
-- Total incidents analyzed: pending
-- Date range covered: pending
-- Top ethics issue: pending
-- Top application area: pending
-- Pre-2023 incident count: pending
-- 2023-and-later incident count: pending
+Interpretation note:
+These counts come from a transparent rule-based recreation using the public AIID snapshot, not from the paper's original hand-coded labels.

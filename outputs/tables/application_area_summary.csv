@@ -1,1 +1,15 @@
-application_area,incident_count,share
+application_area,incident_count,share,paper_reported_count,difference_from_paper
+Language/vision model,477,0.301707779886148,27.0,450.0
+Other or unclear,398,0.25173940543959517,,398.0
+AI education,144,0.09108159392789374,2.0,142.0
+Smart finance,117,0.07400379506641366,4.0,113.0
+AI supervision,90,0.056925996204933584,14.0,76.0
+Autonomous driving,75,0.04743833017077799,17.0,58.0
+Smart healthcare,72,0.04554079696394687,10.0,62.0
+Identity authentication,64,0.04048070841239722,14.0,50.0
+Predictive policing,64,0.04048070841239722,5.0,59.0
+Intelligent recommendation,30,0.018975332068311195,14.0,16.0
+Intelligent service robots,21,0.013282732447817837,31.0,-10.0
+AI recruitment,17,0.010752688172043012,10.0,7.0
+Smart home,8,0.005060088551549652,2.0,6.0
+AI game,4,0.002530044275774826,2.0,2.0

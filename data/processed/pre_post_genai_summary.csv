@@ -1,1 +1,19 @@
 period,metric,category,value,notes
+Pre-generative-AI period (before 2023),incident_count,All incidents,511.0,Total cleaned incidents in this period.
+Pre-generative-AI period (before 2023),share_of_incidents,Language/vision model,0.086106,Count=44
+Pre-generative-AI period (before 2023),share_of_incidents,Misinformation or manipulation,0.103718,Count=53
+Pre-generative-AI period (before 2023),share_of_incidents,Harmful content,0.074364,Count=38
+Pre-generative-AI period (before 2023),share_of_incidents,Privacy,0.099804,Count=51
+Pre-generative-AI period (before 2023),share_of_incidents,Discrimination,0.062622,Count=32
+Pre-generative-AI period (before 2023),top_application_area,Other or unclear,199.0,Rank=1; Share=0.389
+Pre-generative-AI period (before 2023),top_application_area,Language/vision model,44.0,Rank=2; Share=0.086
+Pre-generative-AI period (before 2023),top_application_area,Autonomous driving,43.0,Rank=3; Share=0.084
+Generative-AI period (2023 onward),incident_count,All incidents,1070.0,Total cleaned incidents in this period.
+Generative-AI period (2023 onward),share_of_incidents,Language/vision model,0.404673,Count=433
+Generative-AI period (2023 onward),share_of_incidents,Misinformation or manipulation,0.564486,Count=604
+Generative-AI period (2023 onward),share_of_incidents,Harmful content,0.046729,Count=50
+Generative-AI period (2023 onward),share_of_incidents,Privacy,0.090654,Count=97
+Generative-AI period (2023 onward),share_of_incidents,Discrimination,0.016822,Count=18
+Generative-AI period (2023 onward),top_application_area,Language/vision model,433.0,Rank=1; Share=0.405
+Generative-AI period (2023 onward),top_application_area,Other or unclear,199.0,Rank=2; Share=0.186
+Generative-AI period (2023 onward),top_application_area,AI education,111.0,Rank=3; Share=0.104

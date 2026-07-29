@@ -1,1 +1,10 @@
-ethics_issue,incident_count,share
+ethics_issue,incident_count,share,paper_reported_count,difference_from_paper
+Unethical use (illegal use),623,0.39405439595192915,11.0,612.0
+Other or unclear,426,0.269449715370019,,426.0
+Inappropriate use (bad performance),291,0.1840607210626186,48.0,243.0
+Privacy,148,0.09361163820366857,12.0,136.0
+Physical safety,143,0.09044908285895004,32.0,111.0
+Unfair algorithm (evaluation),139,0.08791903858317521,22.0,117.0
+Mental health,52,0.03289057558507274,4.0,48.0
+Racial discrimination,35,0.022137887413029727,38.0,-3.0
+Gender discrimination,18,0.011385199240986717,19.0,-1.0
