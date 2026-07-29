@@ -20,32 +20,44 @@ The paper examines reported AI incidents and groups them into application areas 
 - Updated trends using newer data
 
 ## What I found
-Results will be added after the data has been collected, cleaned, mapped, and summarized.
+Using the public AI Incident Database snapshot from July 27, 2026, this project analyzed 1,581 incidents from 2010 to 2026.
 
-Planned placeholders:
-- Total incidents analyzed: pending
-- Top issue category: pending
-- Top application area: pending
-- Main pre/post-2023 comparison: pending
+- Top recreated application area: Language/vision model (477 incidents, 30.2%)
+- Top recreated ethics issue: Unethical use (illegal use) (623 incidents, 39.4%)
+- Pre-2023 incident count: 511
+- 2023-and-later incident count: 1,070
+- Share of incidents involving language/vision models rose from 8.6% before 2023 to 40.5% from 2023 onward
+- Share of misinformation or manipulation related incidents rose from 10.4% before 2023 to 56.4% from 2023 onward
+
+In this recreated update, the post-2023 period contains many more incidents tied to language/vision systems, synthetic media, and manipulation-style harms than the earlier period. This is a descriptive comparison, not a causal claim that generative AI alone caused the shift.
 
 ## Important limitation
 The AI Incident Database changes over time, and the original paper's exact hand-coded labels may not be available in the current public snapshot. This project is a reproduction-oriented update, not a perfect copy of the original paper.
 
+The public database does not include the paper's exact hand-coded labels, so this project recreates the analysis using available AIID fields and a simplified mapping.
+
 ## How I did it
-1. Downloaded a stable AIID snapshot.
+1. Downloaded a stable AIID snapshot dated July 27, 2026.
 2. Cleaned incident records.
-3. Mapped incidents into issue categories and application areas.
-4. Compared the results with the paper.
+3. Mapped incidents into recreated issue categories and application areas using transparent text rules.
+4. Compared the recreated counts with the paper's reported categories.
 5. Looked at how incidents changed before and after 2023.
 
 ## Charts
-Charts will be added after the analysis is complete. Planned outputs:
+### Portfolio summary card
+![Portfolio summary card](outputs/figures/portfolio_summary_card.png)
 
-- `outputs/figures/top_ethics_issues.png`
-- `outputs/figures/top_application_areas.png`
-- `outputs/figures/incidents_by_year.png`
-- `outputs/figures/pre_post_genai_comparison.png`
-- `outputs/figures/portfolio_summary_card.png`
+### Incident counts by year
+![Incidents by year](outputs/figures/incidents_by_year.png)
+
+### Top recreated application areas
+![Top application areas](outputs/figures/top_application_areas.png)
+
+### Top recreated ethics issues
+![Top ethics issues](outputs/figures/top_ethics_issues.png)
+
+### Before and after 2023
+![Pre/post 2023 comparison](outputs/figures/pre_post_genai_comparison.png)
 
 ## How to reproduce
 ```bash
