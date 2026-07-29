@@ -6,10 +6,10 @@
 Tracks the source documents, snapshot links, access dates, and notes used in the project.
 
 ### `data/raw/aiid_snapshot_raw.csv`
-Placeholder for the raw AI Incident Database snapshot used in the analysis.
+Raw incident-level extract built from the official AIID snapshot dated July 27, 2026. Includes incident date, title, description, report count, and key organization/party fields used in the later mapping steps.
 
 ### `data/raw/original_paper_reference_counts.csv`
-Placeholder for manually entered reference counts from the original paper, when needed for comparison.
+Reference counts transcribed from the Wei and Zhou paper for the original application-area and ethics-issue categories.
 
 ## Processed data
 
@@ -17,7 +17,10 @@ Placeholder for manually entered reference counts from the original paper, when 
 Cleaned incident-level dataset used for analysis.
 
 ### `data/processed/incident_categories_recreated.csv`
-Transparent mapping of source fields into recreated ethics issue and application area categories.
+Long-form incident-to-category output. Each row records either one recreated application-area assignment or one recreated ethics-issue assignment for a specific incident.
+
+### `data/processed/category_mapping.csv`
+Transparent rule table used to recreate application areas and ethics issues from the public AIID text fields.
 
 ### `data/processed/application_area_summary.csv`
 Summary table of incident counts by application area.
