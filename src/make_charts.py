@@ -218,8 +218,8 @@ def extract_stat(summary_stats: list[str], prefix: str) -> str:
 
 def chart_summary_card(summary_stats: list[str]) -> None:
     total_incidents = extract_stat(summary_stats, "- Total incidents analyzed")
-    top_app = extract_stat(summary_stats, "- Top recreated application area")
-    top_issue = extract_stat(summary_stats, "- Top recreated ethics issue")
+    top_app = extract_stat(summary_stats, "- Top recreated primary application area")
+    top_issue = extract_stat(summary_stats, "- Top recreated ethics issue label")
     biggest_change = extract_stat(summary_stats, "- Biggest tracked post-2023 share increase")
 
     fig = plt.figure(figsize=(10, 10), dpi=200, facecolor=BACKGROUND)

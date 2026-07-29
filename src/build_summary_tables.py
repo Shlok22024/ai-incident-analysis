@@ -230,8 +230,8 @@ def write_summary_stats(
         f"- Date range covered: {min_year} to {max_year}",
         f"- Source snapshot date: 2026-07-27",
         "- The 2026 count is partial because the snapshot was collected in July 2026.",
-        f"- Top recreated application area: {top_application['application_area']} ({int(top_application['incident_count']):,} incidents, {top_application['share']:.1%})",
-        f"- Top recreated ethics issue: {top_ethics['ethics_issue']} ({int(top_ethics['incident_count']):,} incidents, {top_ethics['share']:.1%})",
+        f"- Top recreated primary application area: {top_application['application_area']} ({int(top_application['incident_count']):,} incidents, {top_application['share']:.1%})",
+        f"- Top recreated ethics issue label: {top_ethics['ethics_issue']} ({int(top_ethics['incident_count']):,} incidents, {top_ethics['share']:.1%})",
         f"- Pre-2023 incident count: {int(period_totals.get(PRE_PERIOD, 0)):,}",
         f"- 2023-and-later incident count: {int(period_totals.get(POST_PERIOD, 0)):,}",
         (
