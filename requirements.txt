@@ -1,0 +1,10 @@
+pandas
+numpy
+matplotlib
+seaborn
+requests
+jupyter
+notebook
+python-dotenv
+beautifulsoup4
+tqdm
