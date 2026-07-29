@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -16,27 +17,39 @@ MAPPING_OUTPUT_PATH = ROOT / "data" / "processed" / "incident_categories_recreat
 APPLICATION_RULES = [
     {
         "category": "AI education",
-        "triggers": [
+        "whole_word_triggers": [
             "proctor",
             "exam",
-            "teacher",
             "classroom",
             "grading",
-            "education",
             "school district",
-            "university",
             "homework",
+            "admissions algorithm",
+            "student success",
+            "education department",
+            "school policy",
+            "teacher evaluation",
+            "teacher ratings",
         ],
         "reason": "Matched education-related deployment terms.",
     },
     {
         "category": "AI recruitment",
-        "triggers": ["resume", "cv", "recruit", "recruitment", "hiring", "job applicant", "interview screening"],
+        "whole_word_triggers": [
+            "resume screening",
+            "job applicant",
+            "interview screening",
+            "recruitment",
+            "recruit",
+            "hiring",
+            "resume",
+            "cv",
+        ],
         "reason": "Matched hiring or candidate-screening terms.",
     },
     {
         "category": "AI supervision",
-        "triggers": [
+        "whole_word_triggers": [
             "employee monitoring",
             "worker monitoring",
             "workplace surveillance",
@@ -46,37 +59,35 @@ APPLICATION_RULES = [
             "staff monitoring",
             "gig worker",
             "delivery driver",
-            "employee",
-            "worker",
-            "firing",
-            "termination",
             "shift scheduling",
             "warehouse worker",
+            "automated termination",
+            "employee evaluation",
+            "worker evaluation",
+            "gig work",
         ],
         "reason": "Matched worker supervision or algorithmic management terms.",
     },
     {
         "category": "Predictive policing",
-        "triggers": [
+        "whole_word_triggers": [
             "predictive policing",
-            "police department",
-            "law enforcement",
             "sentencing",
             "recidivism",
             "parole",
             "probation",
             "criminal justice",
-            "jail",
-            "prison",
             "mugshot",
             "crime prediction",
             "shotspotter",
+            "risk of reoffending",
+            "police facial recognition",
         ],
         "reason": "Matched policing or criminal-justice terms.",
     },
     {
         "category": "Identity authentication",
-        "triggers": [
+        "whole_word_triggers": [
             "facial recognition",
             "face recognition",
             "identity verification",
@@ -90,13 +101,13 @@ APPLICATION_RULES = [
     },
     {
         "category": "Autonomous driving",
-        "triggers": [
+        "whole_word_triggers": [
             "self-driving",
             "autonomous vehicle",
             "driverless",
             "autopilot",
             "robotaxi",
-            "av ",
+            "autonomous mode",
             "cruise vehicle",
             "waymo",
             "tesla full self-driving",
@@ -105,39 +116,48 @@ APPLICATION_RULES = [
     },
     {
         "category": "Smart healthcare",
-        "triggers": [
-            "patient",
+        "whole_word_triggers": [
             "hospital",
-            "medical",
-            "healthcare",
             "clinic",
-            "diagnosis",
             "diagnostic",
             "radiology",
             "nurse",
             "physician",
+            "oncology",
+            "cancer treatment",
+            "surgery",
+            "surgical",
+            "health risk score",
+            "medical record",
+            "triage",
+            "false diagnosis",
+            "healthcare provider",
         ],
         "reason": "Matched healthcare or clinical terms.",
     },
     {
         "category": "Smart finance",
-        "triggers": [
-            "bank",
+        "whole_word_triggers": [
             "banking",
-            "credit",
+            "bank manager",
+            "credit score",
             "loan",
             "mortgage",
-            "insurance",
-            "trading",
             "stock exchange",
-            "financial",
+            "financial services",
             "taxpayer",
+            "claim payout",
+            "welfare benefits",
+            "insurance claim",
+            "auto-insurance",
+            "investment",
+            "trading bot",
         ],
         "reason": "Matched finance, insurance, or trading terms.",
     },
     {
         "category": "Intelligent recommendation",
-        "triggers": [
+        "whole_word_triggers": [
             "recommendation",
             "recommender",
             "recommended",
@@ -155,13 +175,12 @@ APPLICATION_RULES = [
     },
     {
         "category": "Language/vision model",
-        "triggers": [
+        "whole_word_triggers": [
             "llm",
             "large language model",
             "language model",
             "chatgpt",
-            "gpt-",
-            "gpt ",
+            "gpt",
             "chatbot",
             "generative ai",
             "ai-generated",
@@ -182,6 +201,7 @@ APPLICATION_RULES = [
             "openai model",
             "claude",
             "gemini",
+            "openai",
             "llama",
             "midjourney",
             "stable diffusion",
@@ -190,17 +210,25 @@ APPLICATION_RULES = [
     },
     {
         "category": "Smart home",
-        "triggers": ["smart home", "home assistant", "alexa", "siri", "google home", "ring doorbell", "thermostat"],
+        "whole_word_triggers": [
+            "smart home",
+            "home assistant",
+            "alexa",
+            "siri",
+            "google home",
+            "ring doorbell",
+            "thermostat",
+        ],
         "reason": "Matched home-assistant or smart-home terms.",
     },
     {
         "category": "AI game",
-        "triggers": ["video game", "game ai", "gaming", "game bot", "npc", "esports"],
+        "whole_word_triggers": ["video game", "game ai", "gaming", "game bot", "npc", "esports"],
         "reason": "Matched gaming-related AI terms.",
     },
     {
         "category": "Intelligent service robots",
-        "triggers": [
+        "whole_word_triggers": [
             "robot",
             "robotic",
             "warehouse automation",
@@ -216,7 +244,7 @@ APPLICATION_RULES = [
 ETHICS_RULES = [
     {
         "category": "Racial discrimination",
-        "triggers": [
+        "whole_word_triggers": [
             "racial discrimination",
             "racist",
             "racial bias",
@@ -228,26 +256,27 @@ ETHICS_RULES = [
             "bias against hispanic",
             "ethnic bias",
         ],
+        "stem_triggers": ["discriminat"],
         "reason": "Matched race, ethnicity, or antisemitism discrimination terms.",
     },
     {
         "category": "Gender discrimination",
-        "triggers": [
+        "whole_word_triggers": [
             "gender discrimination",
             "sex discrimination",
             "sexist",
-            "misogyn",
             "gender bias",
             "bias against women",
             "bias against female",
             "homophobic",
             "transphobic",
         ],
+        "stem_triggers": ["misogyn", "discriminat"],
         "reason": "Matched sex, gender, or sexuality discrimination terms.",
     },
     {
         "category": "Physical safety",
-        "triggers": [
+        "whole_word_triggers": [
             "killed",
             "injured",
             "injury",
@@ -264,38 +293,29 @@ ETHICS_RULES = [
     },
     {
         "category": "Unfair algorithm (evaluation)",
-        "triggers": [
+        "whole_word_triggers": [
             "risk assessment",
             "credit score",
-            "score people",
             "algorithmic rating",
             "teacher evaluation",
             "grading system",
             "evaluation algorithm",
             "eligibility",
-            "benefits",
             "benefit denial",
             "denied service",
             "screening algorithm",
             "admissions algorithm",
             "resume screening",
-            "assessment",
-            "audit",
-            "rating",
             "scoring",
-            "flagged",
+            "ranking applicants",
         ],
         "reason": "Matched automated evaluation, scoring, or eligibility terms.",
     },
     {
         "category": "Privacy",
-        "triggers": [
+        "whole_word_triggers": [
             "privacy",
             "surveillance",
-            "tracked",
-            "tracking",
-            "monitor",
-            "monitored",
             "monitor students",
             "data collection",
             "personal data",
@@ -303,17 +323,18 @@ ETHICS_RULES = [
             "without consent",
             "data exposure",
             "data leak",
+            "private information",
+            "sensitive data",
         ],
         "reason": "Matched privacy, surveillance, or data-protection terms.",
     },
     {
         "category": "Unethical use (illegal use)",
-        "triggers": [
+        "whole_word_triggers": [
             "deepfake",
             "fraud",
             "scam",
             "phishing",
-            "impersonat",
             "spoof",
             "bypass",
             "jailbreak",
@@ -324,11 +345,12 @@ ETHICS_RULES = [
             "exploit",
             "stolen",
         ],
+        "stem_triggers": ["impersonat"],
         "reason": "Matched fraud, malicious misuse, or adversarial exploitation terms.",
     },
     {
         "category": "Mental health",
-        "triggers": [
+        "whole_word_triggers": [
             "mental health",
             "suicide",
             "suicidal",
@@ -343,30 +365,42 @@ ETHICS_RULES = [
     },
     {
         "category": "Inappropriate use (bad performance)",
-        "triggers": [
+        "whole_word_triggers": [
             "failed",
             "failure",
             "incorrect",
-            "wrongly",
-            "wrong ",
             "inaccurate",
             "malfunction",
             "bug",
             "error",
-            "hallucinat",
-            "misclassif",
             "poor performance",
             "outage",
             "disruption",
         ],
+        "stem_triggers": ["hallucinat", "misclassif"],
         "reason": "Matched poor performance, malfunction, or incorrect-output terms.",
     },
 ]
 
 
-def first_matching_trigger(text: str, triggers: list[str]) -> str | None:
-    for trigger in triggers:
-        if trigger in text:
+def make_whole_word_pattern(trigger: str) -> str:
+    return rf"(?<!\w){re.escape(trigger.strip())}(?!\w)"
+
+
+def make_stem_pattern(trigger: str) -> str:
+    return rf"\b{re.escape(trigger.strip())}"
+
+
+def first_matching_trigger(
+    text: str,
+    whole_word_triggers: list[str] | None = None,
+    stem_triggers: list[str] | None = None,
+) -> str | None:
+    for trigger in whole_word_triggers or []:
+        if re.search(make_whole_word_pattern(trigger), text):
+            return trigger
+    for trigger in stem_triggers or []:
+        if re.search(make_stem_pattern(trigger), text):
             return trigger
     return None
 
@@ -374,20 +408,24 @@ def first_matching_trigger(text: str, triggers: list[str]) -> str | None:
 def write_rule_table() -> None:
     rows: list[dict[str, str]] = []
     for rule in APPLICATION_RULES:
+        trigger_text = " | ".join(rule.get("whole_word_triggers", []))
+        stem_text = " | ".join(rule.get("stem_triggers", []))
         rows.append(
             {
                 "source_field": "text_for_classification",
-                "source_value": " | ".join(rule["triggers"]),
+                "source_value": " | ".join(part for part in [trigger_text, stem_text] if part),
                 "mapped_ethics_issue": "",
                 "mapped_application_area": rule["category"],
                 "mapping_reason": rule["reason"],
             }
         )
     for rule in ETHICS_RULES:
+        trigger_text = " | ".join(rule.get("whole_word_triggers", []))
+        stem_text = " | ".join(rule.get("stem_triggers", []))
         rows.append(
             {
                 "source_field": "text_for_classification",
-                "source_value": " | ".join(rule["triggers"]),
+                "source_value": " | ".join(part for part in [trigger_text, stem_text] if part),
                 "mapped_ethics_issue": rule["category"],
                 "mapped_application_area": "",
                 "mapping_reason": rule["reason"],
@@ -411,7 +449,11 @@ def write_rule_table() -> None:
 
 def classify_application_area(text: str) -> tuple[str, str, str]:
     for rule in APPLICATION_RULES:
-        trigger = first_matching_trigger(text, rule["triggers"])
+        trigger = first_matching_trigger(
+            text,
+            whole_word_triggers=rule.get("whole_word_triggers"),
+            stem_triggers=rule.get("stem_triggers"),
+        )
         if trigger:
             return rule["category"], trigger, rule["reason"]
     return (
@@ -424,7 +466,11 @@ def classify_application_area(text: str) -> tuple[str, str, str]:
 def classify_ethics_issues(text: str) -> list[tuple[str, str, str]]:
     matches: list[tuple[str, str, str]] = []
     for rule in ETHICS_RULES:
-        trigger = first_matching_trigger(text, rule["triggers"])
+        trigger = first_matching_trigger(
+            text,
+            whole_word_triggers=rule.get("whole_word_triggers"),
+            stem_triggers=rule.get("stem_triggers"),
+        )
         if trigger:
             matches.append((rule["category"], trigger, rule["reason"]))
 
