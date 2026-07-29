@@ -22,14 +22,16 @@ The paper examines reported AI incidents and groups them into application areas 
 ## What I found
 Using the public AI Incident Database snapshot from July 27, 2026, this project analyzed 1,581 incidents from 2010 to 2026.
 
-- Top recreated application area: Language/vision model (477 incidents, 30.2%)
-- Top recreated ethics issue: Unethical use (illegal use) (623 incidents, 39.4%)
+- Top recreated primary application area: Language/vision model (623 incidents, 39.4%)
+- Top recreated ethics issue label: Unethical use (illegal use) (571 incidents, 36.1%)
 - Pre-2023 incident count: 511
 - 2023-and-later incident count: 1,070
-- Share of incidents involving language/vision models rose from 8.6% before 2023 to 40.5% from 2023 onward
-- Share of misinformation or manipulation related incidents rose from 10.4% before 2023 to 56.4% from 2023 onward
+- Share of incidents involving language/vision or generative-AI terms rose from 21.9% before 2023 to 77.2% from 2023 onward
+- Share of misinformation or manipulation related incidents rose from 9.4% before 2023 to 54.4% from 2023 onward
 
-In this recreated update, the post-2023 period contains many more incidents tied to language/vision systems, synthetic media, and manipulation-style harms than the earlier period. This is a descriptive comparison, not a causal claim that generative AI alone caused the shift.
+In this rule-based recreated update, the post-2023 period contains many more reported incidents involving language/vision or generative-AI terms, synthetic media, and manipulation-style harms than the earlier period. This is a descriptive comparison using a practical 2023 cutoff, not a causal claim.
+
+The 2026 count is partial because the snapshot was collected in July 2026.
 
 ## Important limitation
 The AI Incident Database changes over time, and the original paper's exact hand-coded labels may not be available in the current public snapshot. This project is a reproduction-oriented update, not a perfect copy of the original paper.
@@ -39,9 +41,9 @@ The public database does not include the paper's exact hand-coded labels, so thi
 ## How I did it
 1. Downloaded a stable AIID snapshot dated July 27, 2026.
 2. Cleaned incident records.
-3. Mapped incidents into recreated issue categories and application areas using transparent text rules.
+3. Mapped incidents into rule-based recreated issue categories and primary application areas using transparent text rules.
 4. Compared the recreated counts with the paper's reported categories.
-5. Looked at how incidents changed before and after 2023.
+5. Looked at how incidents changed before and after 2023 using a separate language/vision or generative-AI involvement flag.
 
 ## Charts
 ### Portfolio summary card
@@ -50,10 +52,10 @@ The public database does not include the paper's exact hand-coded labels, so thi
 ### Incident counts by year
 ![Incidents by year](outputs/figures/incidents_by_year.png)
 
-### Top recreated application areas
+### Top recreated primary application areas
 ![Top application areas](outputs/figures/top_application_areas.png)
 
-### Top recreated ethics issues
+### Top recreated AI incident issues
 ![Top ethics issues](outputs/figures/top_ethics_issues.png)
 
 ### Before and after 2023
