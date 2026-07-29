@@ -34,6 +34,10 @@ htmlcov/
 *.temp
 tmp/
 temp/
+*.part
+
+# Large source archives kept only for local regeneration
+data/raw/*.tar.bz2
 
 # Environment and credentials
 .env
