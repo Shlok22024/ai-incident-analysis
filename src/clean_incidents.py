@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -11,6 +12,30 @@ RAW_PATH = ROOT / "data" / "raw" / "aiid_snapshot_raw.csv"
 OUTPUT_PATH = ROOT / "data" / "processed" / "incidents_cleaned.csv"
 MIN_YEAR = 2010
 GENAI_CUTOFF_YEAR = 2023
+
+LANGUAGE_VISION_TERMS = [
+    "chatgpt",
+    "gpt",
+    "openai",
+    "claude",
+    "gemini",
+    "bard",
+    "large language model",
+    "llm",
+    "chatbot",
+    "generative ai",
+    "image generator",
+    "text-to-image",
+    "deepfake",
+    "synthetic media",
+    "vision model",
+    "facial recognition",
+    "computer vision",
+]
+LANGUAGE_VISION_STEMS = [
+    "ai-generated",
+    "ai generated",
+]
 
 
 def normalize_text(value: object) -> str:
@@ -28,6 +53,20 @@ def build_text_for_classification(row: pd.Series) -> str:
         row["alleged_harmed_parties"],
     ]
     return " ".join(part for part in parts if part).lower()
+
+
+def make_whole_word_pattern(term: str) -> str:
+    return rf"(?<!\w){re.escape(term.strip())}(?!\w)"
+
+
+def make_stem_pattern(term: str) -> str:
+    return rf"\b{re.escape(term.strip())}"
+
+
+def has_language_vision_terms(text: str) -> bool:
+    return any(re.search(make_whole_word_pattern(term), text) for term in LANGUAGE_VISION_TERMS) or any(
+        re.search(make_stem_pattern(term), text) for term in LANGUAGE_VISION_STEMS
+    )
 
 
 def main() -> None:
@@ -58,6 +97,7 @@ def main() -> None:
         else "Generative-AI period (2023 onward)"
     )
     incidents["text_for_classification"] = incidents.apply(build_text_for_classification, axis=1)
+    incidents["has_language_vision_terms"] = incidents["text_for_classification"].apply(has_language_vision_terms)
 
     incidents["incident_date"] = incidents["incident_date"].dt.strftime("%Y-%m-%d")
     incidents = incidents.sort_values(["incident_date", "incident_id"]).reset_index(drop=True)
@@ -76,6 +116,7 @@ def main() -> None:
         "report_count",
         "report_ids",
         "text_for_classification",
+        "has_language_vision_terms",
         "snapshot_date",
         "snapshot_url",
     ]
