@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -24,16 +25,14 @@ MISINFO_TERMS = [
     "misinformation",
     "disinformation",
     "deepfake",
-    "fake ",
     "fabricated",
     "fabrication",
-    "impersonat",
     "synthetic voice",
     "voice clone",
     "hoax",
-    "deceiv",
-    "manipulat",
+    "synthetic media",
 ]
+MISINFO_STEMS = ["impersonat", "deceiv", "manipulat"]
 HARMFUL_CONTENT_TERMS = [
     "inappropriate content",
     "harmful content",
@@ -117,20 +116,29 @@ def build_ethics_summary(incidents: pd.DataFrame, paper_counts: pd.DataFrame) ->
     return summary
 
 
-def has_text_term(text: str, terms: list[str]) -> bool:
-    return any(term in text for term in terms)
+def make_whole_word_pattern(term: str) -> str:
+    return rf"(?<!\w){re.escape(term.strip())}(?!\w)"
+
+
+def make_stem_pattern(term: str) -> str:
+    return rf"\b{re.escape(term.strip())}"
+
+
+def has_text_term(text: str, whole_word_terms: list[str], stem_terms: list[str] | None = None) -> bool:
+    if any(re.search(make_whole_word_pattern(term), text) for term in whole_word_terms):
+        return True
+    return any(re.search(make_stem_pattern(term), text) for term in stem_terms or [])
 
 
 def build_period_metrics(incidents: pd.DataFrame) -> pd.DataFrame:
     incidents = incidents.copy()
     incidents["text_for_classification"] = incidents["text_for_classification"].fillna("")
-    incidents["has_language_vision"] = incidents["application_area"].eq("Language/vision model")
     incidents["has_privacy"] = incidents["ethics_issues"].apply(lambda issues: "Privacy" in issues)
     incidents["has_discrimination"] = incidents["ethics_issues"].apply(
         lambda issues: "Racial discrimination" in issues or "Gender discrimination" in issues
     )
     incidents["has_misinformation_or_manipulation"] = incidents["text_for_classification"].apply(
-        lambda text: has_text_term(text, MISINFO_TERMS)
+        lambda text: has_text_term(text, MISINFO_TERMS, MISINFO_STEMS)
     )
     incidents["has_harmful_content"] = incidents["text_for_classification"].apply(
         lambda text: has_text_term(text, HARMFUL_CONTENT_TERMS)
@@ -150,7 +158,7 @@ def build_period_metrics(incidents: pd.DataFrame) -> pd.DataFrame:
         )
 
         for label, column in [
-            ("Language/vision model", "has_language_vision"),
+            ("Language/vision or generative-AI terms", "has_language_vision_terms"),
             ("Misinformation or manipulation", "has_misinformation_or_manipulation"),
             ("Harmful content", "has_harmful_content"),
             ("Privacy", "has_privacy"),
@@ -221,6 +229,7 @@ def write_summary_stats(
         f"- Total incidents analyzed: {total_incidents:,}",
         f"- Date range covered: {min_year} to {max_year}",
         f"- Source snapshot date: 2026-07-27",
+        "- The 2026 count is partial because the snapshot was collected in July 2026.",
         f"- Top recreated application area: {top_application['application_area']} ({int(top_application['incident_count']):,} incidents, {top_application['share']:.1%})",
         f"- Top recreated ethics issue: {top_ethics['ethics_issue']} ({int(top_ethics['incident_count']):,} incidents, {top_ethics['share']:.1%})",
         f"- Pre-2023 incident count: {int(period_totals.get(PRE_PERIOD, 0)):,}",
