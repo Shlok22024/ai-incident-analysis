@@ -101,7 +101,7 @@ def chart_top_application_areas(application_summary: pd.DataFrame) -> None:
 
     fig, ax = plt.subplots(figsize=(12, 8), dpi=200)
     sns.barplot(data=chart_data, x="incident_count", y="application_area", color=SECONDARY, ax=ax)
-    ax.set_title("Top Recreated Application Areas\nExcluding 'Other or unclear'")
+    ax.set_title("Top Recreated Primary Application Areas\nExcluding 'Other or unclear'")
     ax.set_xlabel("Incident count")
     ax.set_ylabel("")
     style_axes(ax)
@@ -120,7 +120,7 @@ def chart_top_ethics_issues(ethics_summary: pd.DataFrame) -> None:
 
     fig, ax = plt.subplots(figsize=(12, 8), dpi=200)
     sns.barplot(data=chart_data, x="incident_count", y="ethics_issue", color=ACCENT, ax=ax)
-    ax.set_title("Top Recreated Ethics Issues\nExcluding 'Other or unclear'")
+    ax.set_title("Top Recreated AI Incident Issues\nExcluding 'Other or unclear'")
     ax.set_xlabel("Incident count")
     ax.set_ylabel("")
     style_axes(ax)
@@ -143,11 +143,18 @@ def chart_incidents_by_year(incidents: pd.DataFrame) -> None:
     ax.fill_between(year_counts["incident_year"], year_counts["incident_count"], color=SECONDARY, alpha=0.15)
     ax.axvline(2023, color=ACCENT_DARK, linestyle="--", linewidth=2)
     ax.text(2023.2, year_counts["incident_count"].max() * 0.92, "2023 cutoff", color=ACCENT_DARK, fontsize=11)
-    ax.set_title("AI Incident Reports in the Cleaned Dataset by Year")
+    ax.set_title("Reported AI Incidents in the Cleaned Dataset by Year")
     ax.set_xlabel("Incident year")
     ax.set_ylabel("Incident count")
     ax.set_xlim(year_counts["incident_year"].min(), year_counts["incident_year"].max())
     style_axes(ax)
+    fig.text(
+        0.01,
+        0.01,
+        "Note: The 2026 count is partial because the snapshot was collected in July 2026.",
+        fontsize=10,
+        color=INK,
+    )
     plt.tight_layout()
     fig.savefig(FIGURES_DIR / "incidents_by_year.png", bbox_inches="tight")
     plt.close(fig)
@@ -164,7 +171,7 @@ def chart_pre_post_comparison(pre_post_summary: pd.DataFrame) -> None:
     )
 
     category_order = [
-        "Language/vision model",
+        "Language/vision or generative-AI terms",
         "Misinformation or manipulation",
         "Harmful content",
         "Privacy",
@@ -182,7 +189,7 @@ def chart_pre_post_comparison(pre_post_summary: pd.DataFrame) -> None:
         palette=[GOLD, ACCENT],
         ax=ax,
     )
-    ax.set_title("How the Mix of Incidents Changes After 2023")
+    ax.set_title("How the Mix of Reported Incidents Changes After 2023")
     ax.set_xlabel("")
     ax.set_ylabel("Share of incidents")
     ax.yaxis.set_major_formatter(PercentFormatter())
@@ -190,6 +197,13 @@ def chart_pre_post_comparison(pre_post_summary: pd.DataFrame) -> None:
     ax.legend(title="")
     plt.setp(ax.get_xticklabels(), rotation=18, ha="right")
     annotate_bar_counts(ax, is_horizontal=False, suffix="%")
+    fig.text(
+        0.01,
+        0.01,
+        "Note: Uses a practical 2023 cutoff and a separate language/vision or generative-AI involvement flag.",
+        fontsize=10,
+        color=INK,
+    )
     plt.tight_layout()
     fig.savefig(FIGURES_DIR / "pre_post_genai_comparison.png", bbox_inches="tight")
     plt.close(fig)
@@ -225,9 +239,9 @@ def chart_summary_card(summary_stats: list[str]) -> None:
 
     card_text = [
         ("Total incidents analyzed", total_incidents),
-        ("Top recreated issue", top_issue),
-        ("Top recreated application area", top_app),
-        ("Biggest change after 2023", biggest_change),
+        ("Top recreated issue label", top_issue),
+        ("Top recreated primary application area", top_app),
+        ("Biggest post-2023 shift", biggest_change),
     ]
 
     y = 0.75
@@ -242,10 +256,11 @@ def chart_summary_card(summary_stats: list[str]) -> None:
         0.11,
         "AI harms are not one problem. In this recreated dataset, they show up as misuse,\n"
         "bad performance, privacy issues, discrimination, safety risks, and a sharp post-2023\n"
-        "rise in language/vision and misinformation-style incidents.",
+        "rise in incidents involving language/vision or generative-AI terms.",
         fontsize=13,
         color=INK,
     )
+    ax.text(0.08, 0.05, "2026 is a partial year because the snapshot was collected in July 2026.", fontsize=10, color=INK)
 
     fig.savefig(FIGURES_DIR / "portfolio_summary_card.png", bbox_inches="tight")
     plt.close(fig)
