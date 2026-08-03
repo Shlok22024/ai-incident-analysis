@@ -42,6 +42,35 @@ ILLEGAL = "Unethical use (illegal use)"
 MENTAL = "Mental health"
 UNCLEAR = "Other or unclear"
 
+APPLICATION_EVIDENCE = {
+    ISR: "a deployed robotic or embodied service system",
+    LVM: "a language, vision, or media-generation system",
+    AD: "a self-driving or vehicle-autonomy deployment",
+    IR: "a recommendation, ranking, or personalization system",
+    IA: "an identity-verification or biometric authentication system",
+    AIS: "a worker-monitoring, moderation, or oversight system",
+    SH: "a healthcare, triage, or medical-risk system",
+    AIR: "a hiring or applicant-screening system",
+    PP: "a policing, sentencing, or criminal-justice decision system",
+    SF: "a finance, lending, insurance, or pricing system",
+    AIG: "a game-related AI system",
+    SMH: "a consumer smart-home or household device system",
+    AIE: "an education, grading, or proctoring system",
+    OTH: "an AI-related incident that does not fit the paper's named application areas cleanly",
+}
+
+ETHICS_EVIDENCE = {
+    BAD: "bad performance or failure in deployment",
+    RACE: "racial discrimination or unequal racial impact",
+    SAFE: "physical safety risk or injury",
+    UNFAIR: "unfair evaluation or decision-making",
+    GENDER: "gender discrimination",
+    PRIV: "privacy or surveillance concern",
+    ILLEGAL: "misuse, abuse, or other unethical use",
+    MENTAL: "mental-health-related harm",
+    UNCLEAR: "a harm that remains unclear in the public description",
+}
+
 MAIN_CODES: dict[int, tuple[str, str, list[str], bool]] = {
     1: (US, IR, [BAD], False),
     2: (US, ISR, [SAFE], False),
@@ -201,6 +230,26 @@ def expand_ethics(issues: list[str]) -> list[str]:
     return padded[:4]
 
 
+def join_phrases(values: list[str]) -> str:
+    if len(values) == 1:
+        return values[0]
+    if len(values) == 2:
+        return f"{values[0]} and {values[1]}"
+    return ", ".join(values[:-1]) + f", and {values[-1]}"
+
+
+def build_evidence_note(application_area: str, ethics_issues: list[str], uncertainty_flag: bool) -> str:
+    application_text = APPLICATION_EVIDENCE[application_area]
+    ethics_text = join_phrases([ETHICS_EVIDENCE[issue] for issue in ethics_issues])
+    note = (
+        f"Title and description describe {application_text}, supporting {application_area} with "
+        f"{ethics_text} labels."
+    )
+    if uncertainty_flag:
+        note += " The available public description leaves some ambiguity, so the coding was retained with caution."
+    return note
+
+
 def main() -> None:
     sample = pd.read_csv(SAMPLE_PATH)
     sample_ids = sample["incident_id"].tolist()
@@ -227,7 +276,7 @@ def main() -> None:
                 "ethics_issue_3": ethics_3,
                 "ethics_issue_4": ethics_4,
                 "ethics_issue_notes": "",
-                "evidence_notes": row.title,
+                "evidence_notes": build_evidence_note(application_area, ethics_issues, uncertainty_flag),
                 "coder": "llm_assisted_directed_coding_reviewed",
                 "coding_pass": "single_pass_reviewed",
                 "uncertainty_flag": uncertainty_flag,
