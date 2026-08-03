@@ -1,4 +1,4 @@
-"""Generate manual-coding charts for the AI incident analysis project."""
+"""Generate directed-coding charts for the AI incident analysis project."""
 
 from __future__ import annotations
 
@@ -119,7 +119,7 @@ def chart_manual_application_areas(application_summary: pd.DataFrame) -> None:
 
     fig, ax = plt.subplots(figsize=(12, 8.5), dpi=200)
     sns.barplot(data=chart_data, x="incident_count", y="application_area", color=TEAL, ax=ax)
-    ax.set_title("Manual Recreation Sample: Application Areas (2010-2021)")
+    ax.set_title("Application Areas in the Directed Coding Sample (2010-2021)")
     ax.set_xlabel("Incident count in 150-incident sample")
     ax.set_ylabel("")
     style_axes(ax)
@@ -138,7 +138,7 @@ def chart_manual_ethics_issues(ethics_summary: pd.DataFrame) -> None:
 
     fig, ax = plt.subplots(figsize=(12, 7.5), dpi=200)
     sns.barplot(data=chart_data, x="incident_count", y="ethics_issue", color=ORANGE, ax=ax)
-    ax.set_title("Manual Recreation Sample: Ethics Issues (2010-2021)")
+    ax.set_title("Ethics Issues in the Directed Coding Sample (2010-2021)")
     ax.set_xlabel("Incident count in 150-incident sample")
     ax.set_ylabel("")
     style_axes(ax)
@@ -153,7 +153,7 @@ def chart_manual_geography(geographic_summary: pd.DataFrame) -> None:
 
     fig, ax = plt.subplots(figsize=(11, 6.5), dpi=200)
     sns.barplot(data=chart_data, x="incident_count", y="geographic_location", color=GOLD, ax=ax)
-    ax.set_title("Manual Recreation Sample: Geography (2010-2021)")
+    ax.set_title("Geographic Distribution in the Directed Coding Sample (2010-2021)")
     ax.set_xlabel("Incident count in 150-incident sample")
     ax.set_ylabel("")
     style_axes(ax)
@@ -200,20 +200,20 @@ def chart_paper_comparison(
         axes[0],
         paper_app_comparison,
         "application_area",
-        "Application Areas: Paper vs. Recreated 2010-2021 Sample",
+        "Comparison With Paper-Reported Counts: Application Areas",
     )
     plot_grouped_comparison(
         axes[1],
         paper_ethics_comparison,
         "ethics_issue",
-        "Ethics Issues: Paper vs. Recreated 2010-2021 Sample",
+        "Comparison With Paper-Reported Counts: Ethics Issues",
     )
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 0.98))
     fig.text(
         0.02,
         0.015,
-        "Note: Counts are compared against the paper's reported totals, but the current public AIID snapshot appears to have drifted from the paper's incident IDs.",
+        "Note: Counts are compared against the paper's reported totals, but the paper's incident numbers do not map cleanly onto the current public AIID ID space.",
         fontsize=10,
         color=INK,
     )
@@ -259,13 +259,13 @@ def extract_metric(pre_post_summary: pd.DataFrame, period: str, category: str) -
 
 
 def chart_summary_card(summary_stats: list[str], pre_post_summary: pd.DataFrame) -> None:
-    total_sample = extract_stat(summary_stats, "- Manual recreation sample size")
+    total_sample = extract_stat(summary_stats, "- Directed coding sample size")
     top_app = extract_stat(summary_stats, "- Top application area")
     top_issue = extract_stat(summary_stats, "- Top ethics issue")
     taxonomy_fit = extract_stat(summary_stats, "- Post-2021 taxonomy fit counts")
-    lvm_pre = extract_metric(pre_post_summary, "2010-2021 manual recreation", "Language/vision model")
+    lvm_pre = extract_metric(pre_post_summary, "2010-2021 directed coding sample", "Language/vision model")
     lvm_post = extract_metric(pre_post_summary, "2022-2026 extension sample", "Language/vision model")
-    illegal_pre = extract_metric(pre_post_summary, "2010-2021 manual recreation", "Unethical use (illegal use)")
+    illegal_pre = extract_metric(pre_post_summary, "2010-2021 directed coding sample", "Unethical use (illegal use)")
     illegal_post = extract_metric(pre_post_summary, "2022-2026 extension sample", "Unethical use (illegal use)")
 
     fig = plt.figure(figsize=(10, 10), dpi=200, facecolor=BACKGROUND)
@@ -294,10 +294,10 @@ def chart_summary_card(summary_stats: list[str], pre_post_summary: pd.DataFrame)
         )
     )
     ax.text(0.09, 0.89, "What Actually Goes Wrong With AI?", fontsize=24, fontweight="bold", color="white")
-    ax.text(0.09, 0.845, "Manual recreation of a qualitative AI incident study", fontsize=12, color="white")
+    ax.text(0.09, 0.845, "LLM-assisted directed coding of a reproducible AIID sample", fontsize=12, color="white")
 
     cards = [
-        ("Manual sample", f"{total_sample} incidents from 2010-2021"),
+        ("Directed sample", f"{total_sample} incidents from 2010-2021"),
         ("Top issue", top_issue),
         ("Top application area", top_app),
         ("Post-2021 fit", taxonomy_fit),
@@ -350,7 +350,7 @@ def main() -> None:
     chart_taxonomy_fit(inputs["taxonomy_fit_summary"])
     chart_summary_card(inputs["summary_stats"], inputs["pre_post_summary"])
     remove_obsolete_figures()
-    print("Saved manual chart outputs to outputs/figures.")
+    print("Saved directed-coding chart outputs to outputs/figures.")
 
 
 if __name__ == "__main__":

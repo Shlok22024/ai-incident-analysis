@@ -106,4 +106,4 @@ Keep notes short and practical:
 
 ## Reliability Note
 
-This is a single-author portfolio workflow. It does not reproduce the paper's two-coder reliability design. No second independent coding pass was completed, so this project does not report intercoder reliability or self-agreement.
+This is a single-author portfolio workflow. It does not reproduce the paper's two-coder reliability design. No second independent coding pass was completed, so this project does not report intercoder reliability metrics.

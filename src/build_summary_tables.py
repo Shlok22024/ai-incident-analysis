@@ -29,7 +29,7 @@ SUMMARY_STATS_PATH = PROCESSED_DIR / "summary_stats.md"
 
 ETHICS_COLUMNS = ["ethics_issue_1", "ethics_issue_2", "ethics_issue_3", "ethics_issue_4"]
 
-PRE_PERIOD = "2010-2021 manual recreation"
+PRE_PERIOD = "2010-2021 directed coding sample"
 POST_PERIOD = "2022-2026 extension sample"
 
 COMPARE_APPLICATION_AREAS = [
@@ -386,7 +386,7 @@ def write_summary_stats(
     summary_lines = [
         "# Summary Stats",
         "",
-        f"- Manual recreation sample size: {total_incidents}",
+        f"- Directed coding sample size: {total_incidents}",
         f"- Sample date range: {manual['year'].min()} to {manual['year'].max()}",
         f"- Top application area: {top_application['application_area']} ({int(top_application['incident_count'])} incidents, {top_application['share_of_sample']:.1%})",
         f"- Top ethics issue: {top_ethics['ethics_issue']} ({int(top_ethics['incident_count'])} incidents, {top_ethics['share_of_sample']:.1%})",
@@ -404,7 +404,7 @@ def write_summary_stats(
         f"- Post-2021 taxonomy fit counts: Fits well={int(extension_fit_lookup.get('Fits well', 0))}, Fits partially={int(extension_fit_lookup.get('Fits partially', 0))}, Does not fit well={int(extension_fit_lookup.get('Does not fit well', 0))}",
         "",
         "Method note:",
-        "This summary is based on the reviewed LLM-assisted directed coding sample rather than the archived rule-based classifier attempt.",
+        "This summary is based on reviewed LLM-assisted directed coding rather than the archived rule-based classifier attempt.",
         "",
         "Reliability note:",
         "This project does not reproduce the paper's two-coder intercoder reliability design or a completed second coding pass.",

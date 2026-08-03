@@ -1,6 +1,6 @@
 # Summary Stats
 
-- Manual recreation sample size: 150
+- Directed coding sample size: 150
 - Sample date range: 2010 to 2021
 - Top application area: Language/vision model (32 incidents, 21.3%)
 - Top ethics issue: Inappropriate use (bad performance) (75 incidents, 50.0%)
@@ -18,7 +18,7 @@
 - Post-2021 taxonomy fit counts: Fits well=26, Fits partially=15, Does not fit well=9
 
 Method note:
-This summary is based on the reviewed LLM-assisted directed coding sample rather than the archived rule-based classifier attempt.
+This summary is based on reviewed LLM-assisted directed coding rather than the archived rule-based classifier attempt.
 
 Reliability note:
 This project does not reproduce the paper's two-coder intercoder reliability design or a completed second coding pass.

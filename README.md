@@ -3,9 +3,7 @@
 _A simple reproduction and update of an AI incident database study_
 
 ## What this project is
-This project recreates and extends a paper about real-world AI incidents.
-
-The original paper manually coded 150 incidents from the AI Incident Database (AIID). I recreated that approach by manually coding a reproducible 2010-2021 sample using the paper's published categories, then applied the same categories to a small post-2021 sample to see whether they still fit newer incidents.
+This project recreates the coding structure of an AI incident study using a reproducible 2010-2021 sample from the AI Incident Database. The original paper used manual qualitative content analysis; this project uses LLM-assisted directed coding to apply the paper's published categories, with final labels reviewed and accepted by the project author.
 
 ## Why I did it
 After studying AI governance rules in an earlier project, I wanted to look at the other side of the problem: what actually goes wrong when AI systems are deployed.
@@ -23,43 +21,42 @@ In the paper, the authors manually analyzed 150 AIID incidents from 2010 to 2021
 
 ## What the original paper did
 - Used 150 incidents from 2010 to 2021
-- Used manual content analysis
+- Used manual qualitative content analysis
 - Coded time, geography, application area, and ethics issue
 - Used single-label application areas and multi-label ethics issues
 - Reported 13 application areas and 8 ethics issue categories
 - Used two coders and reported intercoder reliability
 
 ## What I recreated
-- Used the public AIID snapshot recorded in this repo
-- Filtered incidents to 2010-2021
-- Selected a reproducible 150-incident sample using an explicit deterministic rule
-- Applied the paper's published taxonomy through directed content analysis
-- Manually coded geography, application area, and ethics issues
-- Compared the resulting counts with the paper's reported counts
-- Checked paper-named incident IDs where the current public snapshot still makes that possible
-- Added a separate 50-incident post-2021 extension sample to test taxonomy fit
+I recreated the paper's coding frame rather than its exact coding process. I filtered the AIID snapshot to the paper's 2010-2021 window, selected a reproducible 150-incident sample, applied the paper's 13 application-area categories and 8 ethics-issue categories, added geography, and compared the resulting distribution with the paper's reported counts.
 
-## Important differences from the paper
-- The paper's exact incident selection rule is not fully recoverable from the public text, so this project uses a transparent deterministic rule instead.
-- The paper derived its taxonomy through conventional content analysis. This project applies the already-published taxonomy through directed content analysis.
-- This project does not reproduce the paper's two-coder reliability design.
-- The named incident spot-checks show that the current public snapshot does not line up cleanly with several paper-named incident examples. This may reflect AIID record drift, changed incident descriptions, sample-selection differences, or other differences between the paper's working dataset and the current public snapshot.
-- This is a portfolio reproduction and update, not a perfect academic replication.
+I then applied the same coding frame to a separate 50-incident post-2021 extension sample to test whether the taxonomy still fits newer incidents.
+
+## Important method differences
+- This is not a faithful reproduction of the paper's manual coding process.
+- The original paper used two human coders and reported intercoder reliability.
+- This project uses LLM-assisted directed coding reviewed by one author.
+- No second independent coding pass was completed.
+- The paper's exact 150-case selection rule is not fully recoverable from the public text.
+- The paper's incident numbers do not appear to map directly to stable AIID incident IDs in the current public snapshot.
 
 ## What I found
-For the 2010-2021 manual recreation sample:
+For the 2010-2021 directed coding sample:
 
 - Top application area: `Language/vision model` with 32 of 150 incidents (21.3%)
 - Top ethics issue: `Inappropriate use (bad performance)` with 75 of 150 incidents (50.0%)
 - Most common geography label: `United States` with 73 of 150 incidents (48.7%)
-- `United States + China + United Kingdom` account for 82 of 150 incidents in this recreation, compared with the paper's reported 89 of 150
+- `United States + China + United Kingdom` account for 82 of 150 incidents in this sample, compared with the paper's reported 89 of 150
 - `Global` accounts for 38 incidents, close to the paper's reported 40
 
-The paper comparison tables also show where this recreation lines up and where it does not. For example, autonomous driving matches the paper's reported count exactly in this sample (`17`), while language/vision models are somewhat higher (`32` here vs `27` in the paper) and intelligent service robots are lower (`14` here vs `31` in the paper).
+The paper comparison tables show where this directed coding sample lines up and where it does not. For example, autonomous driving matches the paper's reported count exactly in this sample (`17`), while language/vision models are somewhat higher (`32` here vs `27` in the paper) and intelligent service robots are lower (`14` here vs `31` in the paper).
 
-The named incident spot-check file is useful as a limitation check. Only 8 of 46 in-sample paper anchors matched the current public snapshot's incident IDs and this project's resulting labels. That does not mean the paper is wrong. The named incident spot-checks show that the current public snapshot does not line up cleanly with several paper-named incident examples. This may reflect AIID record drift, changed incident descriptions, sample-selection differences, or other differences between the paper's working dataset and the current public snapshot.
+## Failed Named-Incident ID Mapping Attempt
+I initially attempted to use paper-named incident numbers as verification anchors. This did not work because the paper's `Incident N` labels do not appear to correspond to stable AIID incident IDs in the current public snapshot.
 
-## Extension: do the old categories still fit newer incidents?
+The named-incident mapping file is therefore treated as a reproducibility limitation, not an agreement test. The paper's incident numbers appear to be internal sequence numbers from its selected 150-case sample rather than a public answer key for current AIID IDs.
+
+## Post-2021 Extension
 For the post-2021 extension sample of 50 incidents:
 
 - `Language/vision model` becomes even more prominent at 17 of 50 incidents (34.0%)
@@ -68,25 +65,25 @@ For the post-2021 extension sample of 50 incidents:
 
 The main takeaway from the extension is that the paper's taxonomy still works for many newer incidents, especially bias, privacy, safety, and evaluation harms. But it strains on synthetic media, deepfakes, prompt-injection misuse, recommendation-driven misinformation, and other generative-AI cases that do not map neatly onto the older categories.
 
-## Negative result: why I moved away from keyword automation
-An earlier version of this project tried to approximate the paper's manual coding with transparent keyword rules across the full public AIID snapshot. That approach was reproducible, but it was not methodologically equivalent to the paper. Keyword rules created false positives, and the resulting rankings were sensitive to rule design and record wording.
+## Negative Result: Why I Moved Away From Keyword Automation
+An earlier version of this project tried to approximate the paper's coding structure with transparent keyword rules across the full public AIID snapshot. That approach was reproducible, but it was not methodologically equivalent to the paper because the paper used manual qualitative coding. Keyword rules created false positives, and the resulting rankings were sensitive to rule design and record wording.
 
-I kept that attempt as an archived experiment in [experiments/rule_based_classifier_attempt/README.md](experiments/rule_based_classifier_attempt/README.md) because it helps explain why the final project uses manual coding instead.
+I kept that attempt as an archived experiment in [experiments/rule_based_classifier_attempt/README.md](experiments/rule_based_classifier_attempt/README.md) because it helps explain why the final project uses reviewed directed coding instead.
 
 ## Charts
 ### Portfolio summary card
 ![Portfolio summary card](outputs/figures/portfolio_summary_card.png)
 
-### Manual application areas
-![Manual application areas](outputs/figures/manual_application_areas.png)
+### Directed coding sample: application areas
+![Directed coding application areas](outputs/figures/manual_application_areas.png)
 
-### Manual ethics issues
-![Manual ethics issues](outputs/figures/manual_ethics_issues.png)
+### Directed coding sample: ethics issues
+![Directed coding ethics issues](outputs/figures/manual_ethics_issues.png)
 
-### Manual geographic distribution
-![Manual geographic distribution](outputs/figures/manual_geographic_distribution.png)
+### Directed coding sample: geographic distribution
+![Directed coding geographic distribution](outputs/figures/manual_geographic_distribution.png)
 
-### Paper comparison
+### Comparison with paper-reported counts
 ![Paper comparison](outputs/figures/paper_comparison.png)
 
 ### Post-2021 taxonomy fit
@@ -106,4 +103,7 @@ python src/make_charts.py
 ```
 
 ## Method transparency
-AI assistance was used for repository scaffolding, code generation, review support, draft organization, and preliminary coding suggestions. Final category assignments, evidence notes, interpretation, and retained outputs were reviewed and accepted by the project author. This project is presented as a single-author directed coding recreation, not as an exact replication or two-coder academic reliability study.
+AI assistance was used for repository scaffolding, code generation, review support, draft organization, and preliminary coding suggestions. Final category assignments, evidence notes, interpretation, and retained outputs were reviewed and accepted by the project author. This project is presented as a single-author LLM-assisted directed coding recreation, not as an exact replication of the paper's two-coder manual content analysis.
+
+## Final project claim
+"I recreated the coding structure of a qualitative AI incident study using a reproducible AIID sample and LLM-assisted directed coding, then tested whether the paper's categories still fit newer incidents."

@@ -1,14 +1,14 @@
 period,metric,category,value,notes
-2010-2021 manual recreation,incident_count,All incidents,150.0,Count of incidents in this coded sample.
-2010-2021 manual recreation,share_of_sample,Language/vision model,0.213333,Application area count=32
-2010-2021 manual recreation,share_of_sample,Autonomous driving,0.113333,Application area count=17
-2010-2021 manual recreation,share_of_sample,AI supervision,0.133333,Application area count=20
-2010-2021 manual recreation,share_of_sample,Intelligent recommendation,0.073333,Application area count=11
-2010-2021 manual recreation,share_of_sample,Racial discrimination,0.266667,Ethics issue count=40
-2010-2021 manual recreation,share_of_sample,Privacy,0.1,Ethics issue count=15
-2010-2021 manual recreation,share_of_sample,Unethical use (illegal use),0.06,Ethics issue count=9
-2010-2021 manual recreation,share_of_sample,Mental health,0.006667,Ethics issue count=1
-2010-2021 manual recreation,share_of_sample,Physical safety,0.193333,Ethics issue count=29
+2010-2021 directed coding sample,incident_count,All incidents,150.0,Count of incidents in this coded sample.
+2010-2021 directed coding sample,share_of_sample,Language/vision model,0.213333,Application area count=32
+2010-2021 directed coding sample,share_of_sample,Autonomous driving,0.113333,Application area count=17
+2010-2021 directed coding sample,share_of_sample,AI supervision,0.133333,Application area count=20
+2010-2021 directed coding sample,share_of_sample,Intelligent recommendation,0.073333,Application area count=11
+2010-2021 directed coding sample,share_of_sample,Racial discrimination,0.266667,Ethics issue count=40
+2010-2021 directed coding sample,share_of_sample,Privacy,0.1,Ethics issue count=15
+2010-2021 directed coding sample,share_of_sample,Unethical use (illegal use),0.06,Ethics issue count=9
+2010-2021 directed coding sample,share_of_sample,Mental health,0.006667,Ethics issue count=1
+2010-2021 directed coding sample,share_of_sample,Physical safety,0.193333,Ethics issue count=29
 2022-2026 extension sample,incident_count,All incidents,50.0,Count of incidents in this coded sample.
 2022-2026 extension sample,share_of_sample,Language/vision model,0.34,Application area count=17
 2022-2026 extension sample,share_of_sample,Autonomous driving,0.18,Application area count=9
