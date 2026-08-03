@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SAMPLE_PATH = ROOT / "data" / "processed" / "manual_sample_2010_2021.csv"
 MANUAL_DIR = ROOT / "data" / "manual_coding"
 WORKBOOK_PATH = MANUAL_DIR / "manual_coding_2010_2021.csv"
-PASS2_PATH = MANUAL_DIR / "manual_coding_2010_2021_pass2.csv"
+TEMPLATE_DIR = MANUAL_DIR / "templates"
+PASS2_PATH = TEMPLATE_DIR / "manual_coding_2010_2021_pass2_template.csv"
 
 
 def build_template(sample: pd.DataFrame, coder: str, coding_pass: str) -> pd.DataFrame:
@@ -38,9 +39,10 @@ def build_template(sample: pd.DataFrame, coder: str, coding_pass: str) -> pd.Dat
 def main() -> None:
     sample = pd.read_csv(SAMPLE_PATH)
     MANUAL_DIR.mkdir(parents=True, exist_ok=True)
+    TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
 
     build_template(sample, coder="project_author", coding_pass="pass1").to_csv(WORKBOOK_PATH, index=False)
-    build_template(sample, coder="project_author", coding_pass="pass2").to_csv(PASS2_PATH, index=False)
+    build_template(sample, coder="project_author", coding_pass="template_pass2").to_csv(PASS2_PATH, index=False)
 
     print(
         "Saved blank directed-coding workbooks to "
