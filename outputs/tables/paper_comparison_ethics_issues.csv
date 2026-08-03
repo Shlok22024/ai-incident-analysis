@@ -1,0 +1,9 @@
+ethics_issue,project_count,share_of_sample,paper_reported_count,count_difference,project_rank,paper_rank
+Inappropriate use (bad performance),75,0.5,48,27,1,1
+Racial discrimination,40,0.266667,38,2,2,2
+Physical safety,29,0.193333,32,-3,3,3
+Unfair algorithm (evaluation),25,0.166667,22,3,4,4
+Gender discrimination,17,0.113333,19,-2,5,5
+Privacy,15,0.1,12,3,6,6
+Unethical use (illegal use),9,0.06,11,-2,7,7
+Mental health,1,0.006667,4,-3,8,8

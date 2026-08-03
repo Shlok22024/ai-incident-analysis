@@ -1,14 +1,20 @@
 # Summary Stats
 
-- Total incidents analyzed: 1,581
-- Date range covered: 2010 to 2026
-- Source snapshot date: 2026-07-27
-- The 2026 count is partial because the snapshot was collected in July 2026.
-- Top recreated primary application area: Language/vision model (623 incidents, 39.4%)
-- Top recreated ethics issue label: Unethical use (illegal use) (571 incidents, 36.1%)
-- Pre-2023 incident count: 511
-- 2023-and-later incident count: 1,070
-- Biggest tracked post-2023 share increase: Language/vision or generative-AI terms (+55.3 percentage points)
+- Manual recreation sample size: 150
+- Sample date range: 2010 to 2021
+- Top application area: Language/vision model (32 incidents, 21.3%)
+- Top ethics issue: Inappropriate use (bad performance) (75 incidents, 50.0%)
+- Most common geography label: United States (73 incidents, 48.7%)
+- United States + China + United Kingdom incidents: 82 of 150
+- Paper reference point: the paper reports 89 of 150 incidents in the United States, China, and the United Kingdom.
+- Global incidents in this recreation: 38
+- Paper reference point: the paper reports 40 global incidents.
+- Named paper incident checks with in-sample project labels: 8 agrees out of 46 checked anchors
+- Named paper anchors outside the reproducible sample: 0
+- Named paper anchors missing from the current public snapshot: 3
 
-Interpretation note:
-These counts come from a transparent rule-based recreation using the public AIID snapshot, not from the paper's original hand-coded labels.
+Method note:
+This summary is based on the directed manual-coding recreation sample rather than the archived rule-based classifier attempt.
+
+Reliability note:
+This project does not reproduce the paper's two-coder intercoder reliability design.

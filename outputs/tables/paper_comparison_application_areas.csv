@@ -1,0 +1,14 @@
+application_area,project_count,share_of_sample,paper_reported_count,count_difference,project_rank,paper_rank
+Intelligent service robots,14,0.093333,31,-17,4,1
+Language/vision model,32,0.213333,27,5,1,2
+Autonomous driving,17,0.113333,17,0,3,3
+Intelligent recommendation,11,0.073333,14,-3,6,4
+Identity authentication,12,0.08,14,-2,5,5
+AI supervision,20,0.133333,14,6,2,6
+Smart healthcare,7,0.046667,10,-3,9,7
+AI recruitment,2,0.013333,10,-8,14,8
+Predictive policing,4,0.026667,5,-1,12,9
+Smart finance,9,0.06,4,5,8,10
+AI game,3,0.02,2,1,13,11
+Smart home,5,0.033333,2,3,10,12
+AI education,10,0.066667,2,8,7,13

@@ -1,272 +1,393 @@
-"""Build summary tables for the recreated AI incident analysis."""
+"""Build manual-coding summary tables for the AI incident analysis project."""
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_DIR = ROOT / "data" / "processed"
+MANUAL_DIR = ROOT / "data" / "manual_coding"
 OUTPUT_TABLES_DIR = ROOT / "outputs" / "tables"
-INCIDENTS_PATH = PROCESSED_DIR / "incidents_cleaned.csv"
-MAPPINGS_PATH = PROCESSED_DIR / "incident_categories_recreated.csv"
+
+MANUAL_CODING_PATH = MANUAL_DIR / "manual_coding_2010_2021.csv"
 PAPER_COUNTS_PATH = ROOT / "data" / "raw" / "original_paper_reference_counts.csv"
+CLEANED_INCIDENTS_PATH = PROCESSED_DIR / "incidents_cleaned.csv"
+SAMPLE_PATH = PROCESSED_DIR / "manual_sample_2010_2021.csv"
+
 APPLICATION_SUMMARY_PATH = PROCESSED_DIR / "application_area_summary.csv"
 ETHICS_SUMMARY_PATH = PROCESSED_DIR / "ethics_issue_summary.csv"
+GEOGRAPHIC_SUMMARY_PATH = PROCESSED_DIR / "geographic_summary.csv"
+PAPER_APP_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_application_areas.csv"
+PAPER_ETHICS_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_ethics_issues.csv"
+PAPER_NAMED_CHECKS_PATH = PROCESSED_DIR / "paper_named_incident_checks.csv"
 PRE_POST_SUMMARY_PATH = PROCESSED_DIR / "pre_post_genai_summary.csv"
 SUMMARY_STATS_PATH = PROCESSED_DIR / "summary_stats.md"
 
-PRE_PERIOD = "Pre-generative-AI period (before 2023)"
-POST_PERIOD = "Generative-AI period (2023 onward)"
+ETHICS_COLUMNS = ["ethics_issue_1", "ethics_issue_2", "ethics_issue_3", "ethics_issue_4"]
 
-MISINFO_TERMS = [
-    "misinformation",
-    "disinformation",
-    "deepfake",
-    "fabricated",
-    "fabrication",
-    "synthetic voice",
-    "voice clone",
-    "hoax",
-    "synthetic media",
+NAMED_INCIDENT_CHECKS: list[dict[str, object]] = [
+    {"incident_id": 5, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
+    {"incident_id": 63, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
+    {"incident_id": 64, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
+    {"incident_id": 114, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
+    {"incident_id": 9, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
+    {"incident_id": 56, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
+    {"incident_id": 141, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
+    {"incident_id": 14, "paper_category_type": "application_area", "paper_category": "Language/vision model"},
+    {"incident_id": 134, "paper_category_type": "application_area", "paper_category": "Language/vision model"},
+    {"incident_id": 11, "paper_category_type": "application_area", "paper_category": "Autonomous driving"},
+    {"incident_id": 66, "paper_category_type": "application_area", "paper_category": "Autonomous driving"},
+    {"incident_id": 90, "paper_category_type": "application_area", "paper_category": "Autonomous driving"},
+    {"incident_id": 2, "paper_category_type": "application_area", "paper_category": "Intelligent recommendation"},
+    {"incident_id": 17, "paper_category_type": "application_area", "paper_category": "Intelligent recommendation"},
+    {"incident_id": 28, "paper_category_type": "application_area", "paper_category": "Identity authentication"},
+    {"incident_id": 31, "paper_category_type": "application_area", "paper_category": "Identity authentication"},
+    {"incident_id": 46, "paper_category_type": "application_area", "paper_category": "Identity authentication"},
+    {"incident_id": 70, "paper_category_type": "application_area", "paper_category": "Identity authentication"},
+    {"incident_id": 133, "paper_category_type": "application_area", "paper_category": "Identity authentication"},
+    {"incident_id": 138, "paper_category_type": "application_area", "paper_category": "Identity authentication"},
+    {"incident_id": 3, "paper_category_type": "application_area", "paper_category": "AI supervision"},
+    {"incident_id": 91, "paper_category_type": "application_area", "paper_category": "AI supervision"},
+    {"incident_id": 123, "paper_category_type": "application_area", "paper_category": "AI supervision"},
+    {"incident_id": 131, "paper_category_type": "application_area", "paper_category": "AI supervision"},
+    {
+        "incident_id": 103,
+        "paper_category_type": "ethics_issue",
+        "paper_category": "Inappropriate use (bad performance)",
+    },
+    {
+        "incident_id": 63,
+        "paper_category_type": "ethics_issue",
+        "paper_category": "Inappropriate use (bad performance)",
+    },
+    {
+        "incident_id": 30,
+        "paper_category_type": "ethics_issue",
+        "paper_category": "Inappropriate use (bad performance)",
+    },
+    {"incident_id": 139, "paper_category_type": "ethics_issue", "paper_category": "Racial discrimination"},
+    {"incident_id": 70, "paper_category_type": "ethics_issue", "paper_category": "Racial discrimination"},
+    {"incident_id": 115, "paper_category_type": "ethics_issue", "paper_category": "Racial discrimination"},
+    {"incident_id": 133, "paper_category_type": "ethics_issue", "paper_category": "Racial discrimination"},
+    {"incident_id": 134, "paper_category_type": "ethics_issue", "paper_category": "Racial discrimination"},
+    {"incident_id": 27, "paper_category_type": "ethics_issue", "paper_category": "Physical safety"},
+    {"incident_id": 90, "paper_category_type": "ethics_issue", "paper_category": "Physical safety"},
+    {"incident_id": 142, "paper_category_type": "ethics_issue", "paper_category": "Physical safety"},
+    {"incident_id": 5, "paper_category_type": "ethics_issue", "paper_category": "Physical safety"},
+    {"incident_id": 122, "paper_category_type": "ethics_issue", "paper_category": "Physical safety"},
+    {
+        "incident_id": 12,
+        "paper_category_type": "ethics_issue",
+        "paper_category": "Unfair algorithm (evaluation)",
+    },
+    {
+        "incident_id": 39,
+        "paper_category_type": "ethics_issue",
+        "paper_category": "Unfair algorithm (evaluation)",
+    },
+    {"incident_id": 14, "paper_category_type": "ethics_issue", "paper_category": "Gender discrimination"},
+    {"incident_id": 20, "paper_category_type": "ethics_issue", "paper_category": "Gender discrimination"},
+    {"incident_id": 36, "paper_category_type": "ethics_issue", "paper_category": "Gender discrimination"},
+    {"incident_id": 45, "paper_category_type": "ethics_issue", "paper_category": "Gender discrimination"},
+    {"incident_id": 17, "paper_category_type": "ethics_issue", "paper_category": "Gender discrimination"},
+    {"incident_id": 110, "paper_category_type": "ethics_issue", "paper_category": "Privacy"},
+    {"incident_id": 38, "paper_category_type": "ethics_issue", "paper_category": "Unethical use (illegal use)"},
+    {"incident_id": 48, "paper_category_type": "ethics_issue", "paper_category": "Unethical use (illegal use)"},
+    {"incident_id": 92, "paper_category_type": "ethics_issue", "paper_category": "Mental health"},
+    {"incident_id": 127, "paper_category_type": "ethics_issue", "paper_category": "Mental health"},
 ]
-MISINFO_STEMS = ["impersonat", "deceiv", "manipulat"]
-HARMFUL_CONTENT_TERMS = [
-    "inappropriate content",
-    "harmful content",
-    "hate speech",
-    "explicit content",
-    "sexual content",
-    "violent content",
-    "toxic content",
-    "abusive content",
-    "graphic content",
-    "porn",
-]
 
 
-def load_incident_frame() -> pd.DataFrame:
-    incidents = pd.read_csv(INCIDENTS_PATH)
-    mappings = pd.read_csv(MAPPINGS_PATH).fillna("")
-
-    application_map = (
-        mappings.loc[mappings["mapped_application_area"] != "", ["incident_id", "mapped_application_area"]]
-        .drop_duplicates(subset=["incident_id"])
-        .rename(columns={"mapped_application_area": "application_area"})
+def load_manual_coding() -> pd.DataFrame:
+    manual = pd.read_csv(MANUAL_CODING_PATH).fillna("")
+    manual["incident_id"] = manual["incident_id"].astype(int)
+    manual["year"] = manual["year"].astype(int)
+    manual["ethics_issues"] = manual[ETHICS_COLUMNS].apply(
+        lambda row: [value for value in row.tolist() if value],
+        axis=1,
     )
-
-    ethics_map = mappings.loc[mappings["mapped_ethics_issue"] != "", ["incident_id", "mapped_ethics_issue"]].copy()
-    ethics_grouped = (
-        ethics_map.groupby("incident_id")["mapped_ethics_issue"]
-        .apply(lambda values: sorted(set(values)))
-        .reset_index(name="ethics_issues")
-    )
-
-    incidents = incidents.merge(application_map, on="incident_id", how="left")
-    incidents = incidents.merge(ethics_grouped, on="incident_id", how="left")
-    incidents["application_area"] = incidents["application_area"].fillna("Other or unclear")
-    incidents["ethics_issues"] = incidents["ethics_issues"].apply(
-        lambda value: value if isinstance(value, list) else ["Other or unclear"]
-    )
-    incidents["ethics_issues_text"] = incidents["ethics_issues"].apply("; ".join)
-    return incidents
+    return manual
 
 
-def build_application_summary(incidents: pd.DataFrame, paper_counts: pd.DataFrame) -> pd.DataFrame:
-    total = len(incidents)
+def build_single_label_summary(frame: pd.DataFrame, column: str, count_name: str) -> pd.DataFrame:
+    total = len(frame)
     summary = (
-        incidents.groupby("application_area")["incident_id"]
+        frame.groupby(column)["incident_id"]
         .nunique()
-        .reset_index(name="incident_count")
-        .sort_values(["incident_count", "application_area"], ascending=[False, True])
+        .reset_index(name=count_name)
+        .sort_values([count_name, column], ascending=[False, True])
         .reset_index(drop=True)
     )
-    summary["share"] = summary["incident_count"] / total
-
-    paper_app_counts = (
-        paper_counts.loc[paper_counts["category_type"] == "application_area", ["category_name", "paper_reported_count"]]
-        .rename(columns={"category_name": "application_area"})
-    )
-    summary = summary.merge(paper_app_counts, on="application_area", how="left")
-    summary["difference_from_paper"] = summary["incident_count"] - summary["paper_reported_count"].fillna(0)
+    summary["share_of_sample"] = (summary[count_name] / total).round(6)
     return summary
 
 
-def build_ethics_summary(incidents: pd.DataFrame, paper_counts: pd.DataFrame) -> pd.DataFrame:
-    ethics_rows = incidents[["incident_id", "ethics_issues"]].explode("ethics_issues")
-    total = incidents["incident_id"].nunique()
+def build_ethics_summary(frame: pd.DataFrame) -> pd.DataFrame:
+    exploded = frame[["incident_id", "ethics_issues"]].explode("ethics_issues")
     summary = (
-        ethics_rows.groupby("ethics_issues")["incident_id"]
+        exploded.groupby("ethics_issues")["incident_id"]
         .nunique()
         .reset_index(name="incident_count")
         .rename(columns={"ethics_issues": "ethics_issue"})
         .sort_values(["incident_count", "ethics_issue"], ascending=[False, True])
         .reset_index(drop=True)
     )
-    summary["share"] = summary["incident_count"] / total
-
-    paper_issue_counts = (
-        paper_counts.loc[paper_counts["category_type"] == "ethics_issue", ["category_name", "paper_reported_count"]]
-        .rename(columns={"category_name": "ethics_issue"})
-    )
-    summary = summary.merge(paper_issue_counts, on="ethics_issue", how="left")
-    summary["difference_from_paper"] = summary["incident_count"] - summary["paper_reported_count"].fillna(0)
+    summary["share_of_sample"] = (summary["incident_count"] / frame["incident_id"].nunique()).round(6)
     return summary
 
 
-def make_whole_word_pattern(term: str) -> str:
-    return rf"(?<!\w){re.escape(term.strip())}(?!\w)"
-
-
-def make_stem_pattern(term: str) -> str:
-    return rf"\b{re.escape(term.strip())}"
-
-
-def has_text_term(text: str, whole_word_terms: list[str], stem_terms: list[str] | None = None) -> bool:
-    if any(re.search(make_whole_word_pattern(term), text) for term in whole_word_terms):
-        return True
-    return any(re.search(make_stem_pattern(term), text) for term in stem_terms or [])
-
-
-def build_period_metrics(incidents: pd.DataFrame) -> pd.DataFrame:
-    incidents = incidents.copy()
-    incidents["text_for_classification"] = incidents["text_for_classification"].fillna("")
-    incidents["has_privacy"] = incidents["ethics_issues"].apply(lambda issues: "Privacy" in issues)
-    incidents["has_discrimination"] = incidents["ethics_issues"].apply(
-        lambda issues: "Racial discrimination" in issues or "Gender discrimination" in issues
+def build_paper_comparison(
+    summary: pd.DataFrame,
+    paper_counts: pd.DataFrame,
+    *,
+    category_type: str,
+    category_column: str,
+) -> pd.DataFrame:
+    paper_subset = (
+        paper_counts.loc[paper_counts["category_type"] == category_type, ["category_name", "paper_reported_count"]]
+        .rename(columns={"category_name": category_column})
+        .copy()
     )
-    incidents["has_misinformation_or_manipulation"] = incidents["text_for_classification"].apply(
-        lambda text: has_text_term(text, MISINFO_TERMS, MISINFO_STEMS)
+    summary_subset = summary.rename(columns={"incident_count": "project_count"}).copy()
+    comparison = paper_subset.merge(summary_subset, on=category_column, how="left")
+    comparison["project_count"] = comparison["project_count"].fillna(0).astype(int)
+    comparison["share_of_sample"] = comparison["share_of_sample"].fillna(0.0)
+    comparison["count_difference"] = comparison["project_count"] - comparison["paper_reported_count"]
+    comparison["paper_rank"] = range(1, len(comparison) + 1)
+
+    project_ranks = (
+        summary_subset[[category_column, "project_count"]]
+        .sort_values(["project_count", category_column], ascending=[False, True])
+        .reset_index(drop=True)
     )
-    incidents["has_harmful_content"] = incidents["text_for_classification"].apply(
-        lambda text: has_text_term(text, HARMFUL_CONTENT_TERMS)
+    project_ranks["project_rank"] = range(1, len(project_ranks) + 1)
+    comparison = comparison.merge(project_ranks[[category_column, "project_rank"]], on=category_column, how="left")
+    comparison["project_rank"] = comparison["project_rank"].fillna("").astype(str)
+    return comparison[
+        [category_column, "project_count", "share_of_sample", "paper_reported_count", "count_difference", "project_rank", "paper_rank"]
+    ]
+
+
+def format_project_category(row: pd.Series, paper_category_type: str) -> str:
+    if paper_category_type == "application_area":
+        return str(row["application_area"])
+    return "; ".join(row["ethics_issues"])
+
+
+def build_notes(
+    incident_id: int,
+    title: str,
+    in_cleaned_snapshot: bool,
+    in_manual_sample: bool,
+    agreement: str,
+) -> str:
+    if not in_cleaned_snapshot:
+        return "Incident ID was not present in the current cleaned public snapshot, so this paper anchor could not be checked."
+    if not in_manual_sample:
+        return f"Current snapshot title: {title}. Present in the public snapshot but outside the reproducible 150-incident manual sample."
+    if agreement == "Agree":
+        return f"Current snapshot title: {title}. Manual directed coding matched the paper-named category on this checked incident."
+    return (
+        f"Current snapshot title: {title}. The current public snapshot and this project's coding do not match the paper-named "
+        "category, which likely reflects AIID drift, different incident descriptions, or sample-selection differences."
     )
+
+
+def build_named_incident_checks(manual: pd.DataFrame, cleaned: pd.DataFrame, sample_ids: set[int]) -> pd.DataFrame:
+    manual_lookup = manual.set_index("incident_id")
+    cleaned_lookup = cleaned.set_index("incident_id")
 
     rows: list[dict[str, object]] = []
-    for period, period_frame in incidents.groupby("pre_post_genai_period", sort=False):
-        total = len(period_frame)
+    for check in NAMED_INCIDENT_CHECKS:
+        incident_id = int(check["incident_id"])
+        paper_category_type = str(check["paper_category_type"])
+        paper_category = str(check["paper_category"])
+        in_cleaned_snapshot = incident_id in cleaned_lookup.index
+        in_manual_sample = incident_id in sample_ids
+
+        project_category = ""
+        agreement = "Not checked"
+        title = ""
+
+        if in_cleaned_snapshot:
+            title = str(cleaned_lookup.loc[incident_id, "title"])
+
+        if in_manual_sample:
+            manual_row = manual_lookup.loc[incident_id]
+            project_category = format_project_category(manual_row, paper_category_type)
+            if paper_category_type == "application_area":
+                agreement = "Agree" if project_category == paper_category else "Disagree"
+            else:
+                agreement = "Agree" if paper_category in manual_row["ethics_issues"] else "Disagree"
+        elif in_cleaned_snapshot:
+            agreement = "Outside sample"
+        else:
+            agreement = "Missing from snapshot"
+
         rows.append(
             {
-                "period": period,
-                "metric": "incident_count",
-                "category": "All incidents",
-                "value": total,
-                "notes": "Total cleaned incidents in this period.",
+                "incident_id": incident_id,
+                "paper_category_type": paper_category_type,
+                "paper_category": paper_category,
+                "project_category": project_category,
+                "agreement": agreement,
+                "notes": build_notes(incident_id, title, in_cleaned_snapshot, in_manual_sample, agreement),
             }
         )
 
-        for label, column in [
-            ("Language/vision or generative-AI terms", "has_language_vision_terms"),
-            ("Misinformation or manipulation", "has_misinformation_or_manipulation"),
-            ("Harmful content", "has_harmful_content"),
-            ("Privacy", "has_privacy"),
-            ("Discrimination", "has_discrimination"),
-        ]:
-            count = int(period_frame[column].sum())
-            rows.append(
-                {
-                    "period": period,
-                    "metric": "share_of_incidents",
-                    "category": label,
-                    "value": round(count / total, 6),
-                    "notes": f"Count={count}",
-                }
-            )
+    checks = pd.DataFrame(rows)
+    return checks.sort_values(["paper_category_type", "paper_category", "incident_id"]).reset_index(drop=True)
 
-        top_apps = (
-            period_frame.groupby("application_area")["incident_id"]
-            .nunique()
-            .reset_index(name="incident_count")
-            .sort_values(["incident_count", "application_area"], ascending=[False, True])
-            .head(3)
-            .reset_index(drop=True)
-        )
-        for rank, top_row in enumerate(top_apps.itertuples(index=False), start=1):
-            rows.append(
-                {
-                    "period": period,
-                    "metric": "top_application_area",
-                    "category": top_row.application_area,
-                    "value": int(top_row.incident_count),
-                    "notes": f"Rank={rank}; Share={top_row.incident_count / total:.3f}",
-                }
-            )
 
-    return pd.DataFrame(rows)
+def build_pending_extension_summary() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {
+                "period": "pending",
+                "metric": "not_generated",
+                "category": "post_2021_extension",
+                "value": "",
+                "notes": "Generated after manual post-2021 extension coding is added.",
+            }
+        ]
+    )
 
 
 def write_summary_stats(
-    incidents: pd.DataFrame,
+    manual: pd.DataFrame,
     application_summary: pd.DataFrame,
     ethics_summary: pd.DataFrame,
-    pre_post_summary: pd.DataFrame,
+    geography_summary: pd.DataFrame,
+    named_checks: pd.DataFrame,
 ) -> None:
-    total_incidents = len(incidents)
-    min_year = incidents["incident_year"].min()
-    max_year = incidents["incident_year"].max()
+    total_incidents = manual["incident_id"].nunique()
     top_application = application_summary.iloc[0]
     top_ethics = ethics_summary.iloc[0]
+    top_geography = geography_summary.iloc[0]
 
-    period_totals = (
-        pre_post_summary.loc[pre_post_summary["metric"] == "incident_count", ["period", "value"]]
-        .set_index("period")["value"]
-        .to_dict()
+    top_three_country_count = int(
+        geography_summary.loc[
+            geography_summary["geographic_location"].isin(["United States", "China", "United Kingdom"]),
+            "incident_count",
+        ].sum()
+    )
+    global_count = int(
+        geography_summary.loc[geography_summary["geographic_location"] == "Global", "incident_count"].sum()
     )
 
-    metric_shares = pre_post_summary.loc[pre_post_summary["metric"] == "share_of_incidents"].copy()
-    metric_shares["value"] = metric_shares["value"].astype(float)
-    pre_shares = metric_shares.loc[metric_shares["period"] == PRE_PERIOD].set_index("category")["value"]
-    post_shares = metric_shares.loc[metric_shares["period"] == POST_PERIOD].set_index("category")["value"]
-    share_changes = (post_shares - pre_shares).sort_values(ascending=False)
-    biggest_change_label = share_changes.index[0]
-    biggest_change_points = share_changes.iloc[0] * 100
+    checked_subset = named_checks.loc[named_checks["agreement"].isin(["Agree", "Disagree"])].copy()
+    agreement_count = int((checked_subset["agreement"] == "Agree").sum())
+    checked_count = len(checked_subset)
+    outside_sample_count = int((named_checks["agreement"] == "Outside sample").sum())
+    missing_snapshot_count = int((named_checks["agreement"] == "Missing from snapshot").sum())
 
     summary_lines = [
         "# Summary Stats",
         "",
-        f"- Total incidents analyzed: {total_incidents:,}",
-        f"- Date range covered: {min_year} to {max_year}",
-        f"- Source snapshot date: 2026-07-27",
-        "- The 2026 count is partial because the snapshot was collected in July 2026.",
-        f"- Top recreated primary application area: {top_application['application_area']} ({int(top_application['incident_count']):,} incidents, {top_application['share']:.1%})",
-        f"- Top recreated ethics issue label: {top_ethics['ethics_issue']} ({int(top_ethics['incident_count']):,} incidents, {top_ethics['share']:.1%})",
-        f"- Pre-2023 incident count: {int(period_totals.get(PRE_PERIOD, 0)):,}",
-        f"- 2023-and-later incident count: {int(period_totals.get(POST_PERIOD, 0)):,}",
-        (
-            "- Biggest tracked post-2023 share increase: "
-            f"{biggest_change_label} ({biggest_change_points:+.1f} percentage points)"
-        ),
+        f"- Manual recreation sample size: {total_incidents}",
+        f"- Sample date range: {manual['year'].min()} to {manual['year'].max()}",
+        f"- Top application area: {top_application['application_area']} ({int(top_application['incident_count'])} incidents, {top_application['share_of_sample']:.1%})",
+        f"- Top ethics issue: {top_ethics['ethics_issue']} ({int(top_ethics['incident_count'])} incidents, {top_ethics['share_of_sample']:.1%})",
+        f"- Most common geography label: {top_geography['geographic_location']} ({int(top_geography['incident_count'])} incidents, {top_geography['share_of_sample']:.1%})",
+        f"- United States + China + United Kingdom incidents: {top_three_country_count} of {total_incidents}",
+        "- Paper reference point: the paper reports 89 of 150 incidents in the United States, China, and the United Kingdom.",
+        f"- Global incidents in this recreation: {global_count}",
+        "- Paper reference point: the paper reports 40 global incidents.",
+        f"- Named paper incident checks with in-sample project labels: {agreement_count} agrees out of {checked_count} checked anchors",
+        f"- Named paper anchors outside the reproducible sample: {outside_sample_count}",
+        f"- Named paper anchors missing from the current public snapshot: {missing_snapshot_count}",
         "",
-        "Interpretation note:",
-        "These counts come from a transparent rule-based recreation using the public AIID snapshot, not from the paper's original hand-coded labels.",
+        "Method note:",
+        "This summary is based on the directed manual-coding recreation sample rather than the archived rule-based classifier attempt.",
+        "",
+        "Reliability note:",
+        "This project does not reproduce the paper's two-coder intercoder reliability design.",
     ]
     SUMMARY_STATS_PATH.write_text("\n".join(summary_lines) + "\n", encoding="utf-8")
 
 
-def save_outputs(application_summary: pd.DataFrame, ethics_summary: pd.DataFrame, pre_post_summary: pd.DataFrame) -> None:
-    application_summary.to_csv(APPLICATION_SUMMARY_PATH, index=False)
-    ethics_summary.to_csv(ETHICS_SUMMARY_PATH, index=False)
-    pre_post_summary.to_csv(PRE_POST_SUMMARY_PATH, index=False)
+def save_csv(frame: pd.DataFrame, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(path, index=False)
 
+
+def save_outputs(
+    application_summary: pd.DataFrame,
+    ethics_summary: pd.DataFrame,
+    geography_summary: pd.DataFrame,
+    paper_app_comparison: pd.DataFrame,
+    paper_ethics_comparison: pd.DataFrame,
+    named_checks: pd.DataFrame,
+    pending_extension_summary: pd.DataFrame,
+) -> None:
     OUTPUT_TABLES_DIR.mkdir(parents=True, exist_ok=True)
-    application_summary.to_csv(OUTPUT_TABLES_DIR / "application_area_summary.csv", index=False)
-    ethics_summary.to_csv(OUTPUT_TABLES_DIR / "ethics_issue_summary.csv", index=False)
-    pre_post_summary.to_csv(OUTPUT_TABLES_DIR / "pre_post_genai_summary.csv", index=False)
+
+    files_to_write = {
+        APPLICATION_SUMMARY_PATH: application_summary,
+        ETHICS_SUMMARY_PATH: ethics_summary,
+        GEOGRAPHIC_SUMMARY_PATH: geography_summary,
+        PAPER_APP_COMPARISON_PATH: paper_app_comparison,
+        PAPER_ETHICS_COMPARISON_PATH: paper_ethics_comparison,
+        PAPER_NAMED_CHECKS_PATH: named_checks,
+        PRE_POST_SUMMARY_PATH: pending_extension_summary,
+        OUTPUT_TABLES_DIR / "application_area_summary.csv": application_summary,
+        OUTPUT_TABLES_DIR / "ethics_issue_summary.csv": ethics_summary,
+        OUTPUT_TABLES_DIR / "geographic_summary.csv": geography_summary,
+        OUTPUT_TABLES_DIR / "paper_comparison_application_areas.csv": paper_app_comparison,
+        OUTPUT_TABLES_DIR / "paper_comparison_ethics_issues.csv": paper_ethics_comparison,
+        OUTPUT_TABLES_DIR / "paper_named_incident_checks.csv": named_checks,
+        OUTPUT_TABLES_DIR / "pre_post_genai_summary.csv": pending_extension_summary,
+    }
+    for path, frame in files_to_write.items():
+        save_csv(frame, path)
 
 
 def main() -> None:
-    incidents = load_incident_frame()
+    manual = load_manual_coding()
     paper_counts = pd.read_csv(PAPER_COUNTS_PATH)
+    cleaned = pd.read_csv(CLEANED_INCIDENTS_PATH).fillna("")
+    sample_ids = set(pd.read_csv(SAMPLE_PATH)["incident_id"].astype(int).tolist())
 
-    application_summary = build_application_summary(incidents, paper_counts)
-    ethics_summary = build_ethics_summary(incidents, paper_counts)
-    pre_post_summary = build_period_metrics(incidents)
+    application_summary = build_single_label_summary(manual, "application_area", "incident_count")
+    ethics_summary = build_ethics_summary(manual)
+    geography_summary = build_single_label_summary(manual, "geographic_location", "incident_count").rename(
+        columns={"geographic_location": "geographic_location"}
+    )
 
-    save_outputs(application_summary, ethics_summary, pre_post_summary)
-    write_summary_stats(incidents, application_summary, ethics_summary, pre_post_summary)
-    print("Saved application, ethics, pre/post, and summary stats outputs.")
+    paper_app_comparison = build_paper_comparison(
+        application_summary,
+        paper_counts,
+        category_type="application_area",
+        category_column="application_area",
+    )
+    paper_ethics_comparison = build_paper_comparison(
+        ethics_summary,
+        paper_counts,
+        category_type="ethics_issue",
+        category_column="ethics_issue",
+    )
+    named_checks = build_named_incident_checks(manual, cleaned, sample_ids)
+    pending_extension_summary = build_pending_extension_summary()
+
+    save_outputs(
+        application_summary,
+        ethics_summary,
+        geography_summary,
+        paper_app_comparison,
+        paper_ethics_comparison,
+        named_checks,
+        pending_extension_summary,
+    )
+    write_summary_stats(
+        manual,
+        application_summary,
+        ethics_summary,
+        geography_summary,
+        named_checks,
+    )
+    print("Saved manual sample summaries, paper comparisons, and named incident checks.")
 
 
 if __name__ == "__main__":
