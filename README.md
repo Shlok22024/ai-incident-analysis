@@ -43,7 +43,7 @@ In the paper, the authors manually analyzed 150 AIID incidents from 2010 to 2021
 - The paper's exact incident selection rule is not fully recoverable from the public text, so this project uses a transparent deterministic rule instead.
 - The paper derived its taxonomy through conventional content analysis. This project applies the already-published taxonomy through directed content analysis.
 - This project does not reproduce the paper's two-coder reliability design.
-- The current public AIID snapshot does not reliably preserve the same incident-ID meanings used in the paper, so named incident spot-checks reveal substantial drift.
+- The named incident spot-checks show that the current public snapshot does not line up cleanly with several paper-named incident examples. This may reflect AIID record drift, changed incident descriptions, sample-selection differences, or other differences between the paper's working dataset and the current public snapshot.
 - This is a portfolio reproduction and update, not a perfect academic replication.
 
 ## What I found
@@ -57,7 +57,7 @@ For the 2010-2021 manual recreation sample:
 
 The paper comparison tables also show where this recreation lines up and where it does not. For example, autonomous driving matches the paper's reported count exactly in this sample (`17`), while language/vision models are somewhat higher (`32` here vs `27` in the paper) and intelligent service robots are lower (`14` here vs `31` in the paper).
 
-The named incident spot-check file is useful as a limitation check. Only 8 of 46 in-sample paper anchors matched the current public snapshot's incident IDs and this project's resulting labels. That does not mean the paper is wrong. It strongly suggests that AIID incident numbering and record content have drifted since the paper's analysis.
+The named incident spot-check file is useful as a limitation check. Only 8 of 46 in-sample paper anchors matched the current public snapshot's incident IDs and this project's resulting labels. That does not mean the paper is wrong. The named incident spot-checks show that the current public snapshot does not line up cleanly with several paper-named incident examples. This may reflect AIID record drift, changed incident descriptions, sample-selection differences, or other differences between the paper's working dataset and the current public snapshot.
 
 ## Extension: do the old categories still fit newer incidents?
 For the post-2021 extension sample of 50 incidents:
@@ -106,4 +106,4 @@ python src/make_charts.py
 ```
 
 ## Method transparency
-AI assistance was used for repository scaffolding, code generation, review support, draft organization, and first-pass coding support. The retained outputs are presented as a directed coding recreation and extension, not as a claim of exact replication or two-coder academic reliability.
+AI assistance was used for repository scaffolding, code generation, review support, draft organization, and preliminary coding suggestions. Final category assignments, evidence notes, interpretation, and retained outputs were reviewed and accepted by the project author. This project is presented as a single-author directed coding recreation, not as an exact replication or two-coder academic reliability study.

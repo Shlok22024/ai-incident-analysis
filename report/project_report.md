@@ -46,6 +46,8 @@ For the post-2021 extension, I used the same fields and added a `taxonomy_fit` j
 
 This project does not reproduce the paper's two-coder reliability design. It is a single-workflow portfolio reproduction.
 
+AI assistance was used for repository scaffolding, code generation, review support, draft organization, and preliminary coding suggestions. Final category assignments, evidence notes, interpretation, and retained outputs were reviewed and accepted by the project author. This project is presented as a single-author directed coding recreation, not as an exact replication or two-coder academic reliability study.
+
 ## Manual coding results
 In the 2010-2021 recreation sample, the most common application area is `Language/vision model` with 32 of 150 incidents. The most common ethics issue is `Inappropriate use (bad performance)` with 75 of 150 incidents. The most common geography label is `United States` with 73 incidents.
 
@@ -65,7 +67,7 @@ These differences are not surprising. The paper's original coded sample is not p
 ## Named incident spot-checks
 The paper names several specific incident IDs in its results sections. I used those as a limited validation subset in `data/processed/paper_named_incident_checks.csv`.
 
-That file shows a strong limitation of working with the current public snapshot: only 8 of 46 in-sample paper anchors agree with this project's labels, and 3 named anchors are not present in the current cleaned snapshot at all. The most plausible explanation is AIID drift over time, where the same incident IDs in the current public data no longer line up cleanly with the paper's original examples.
+That file shows a strong limitation of working with the current public snapshot: only 8 of 46 in-sample paper anchors agree with this project's labels, and 3 named anchors are not present in the current cleaned snapshot at all. The named incident spot-checks show that the current public snapshot does not line up cleanly with several paper-named incident examples. This may reflect AIID record drift, changed incident descriptions, sample-selection differences, or other differences between the paper's working dataset and the current public snapshot.
 
 ## Post-2021 extension
 The extension sample contains 50 incidents from 2022 to 2026. `Language/vision model` becomes even more prominent here, accounting for 17 of 50 incidents. `Unethical use (illegal use)` also becomes much more common than in the 2010-2021 sample.
@@ -83,7 +85,7 @@ An earlier version of this project used transparent keyword rules across the ful
 
 ## Limitations
 - The exact original sample selection rule from the paper is not public.
-- The current public AIID snapshot appears to have drifted relative to the paper's named incident examples.
+- The named incident spot-checks show that the current public snapshot does not line up cleanly with several paper-named incident examples. This may reflect AIID record drift, changed incident descriptions, sample-selection differences, or other differences between the paper's working dataset and the current public snapshot.
 - This project does not reproduce the paper's two-coder reliability design.
 - The post-2021 extension is a small descriptive follow-on sample, not a causal test of generative AI.
 - The AI Incident Database is a useful incident source, not a complete record of all AI harms.
