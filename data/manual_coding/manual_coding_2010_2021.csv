@@ -1,0 +1,151 @@
+incident_id,title,year,geographic_location,application_area,ethics_issue_1,ethics_issue_2,ethics_issue_3,ethics_issue_4,ethics_issue_notes,evidence_notes,coder,coding_pass,uncertainty_flag
+1,Google’s YouTube Kids App Presents Inappropriate Content,2015,,,,,,,,,project_author,pass1,False
+2,Warehouse robot ruptures can of bear spray and injures workers,2018,,,,,,,,,project_author,pass1,False
+3,Crashes with Maneuvering Characteristics Augmentation System (MCAS),2018,,,,,,,,,project_author,pass1,False
+4,Uber AV Killed Pedestrian in Arizona,2018,,,,,,,,,project_author,pass1,False
+5,Collection of Robotic Surgery Malfunctions,2015,,,,,,,,,project_author,pass1,False
+6,"Microsoft's TayBot Allegedly Posts Racist, Sexist, and Anti-Semitic Content to Twitter",2016,,,,,,,,,project_author,pass1,False
+7,Wikipedia Vandalism Prevention Bot Loop,2017,,,,,,,,,project_author,pass1,False
+8,Uber Autonomous Cars Running Red Lights,2014,,,,,,,,,project_author,pass1,False
+9,New York City Reportedly Released Disputed Value-Added Teacher Ratings for Thousands of Teachers,2012,,,,,,,,,project_author,pass1,False
+10,Kronos Scheduling Algorithm Allegedly Caused Financial Issues for Starbucks Employees,2014,,,,,,,,,project_author,pass1,False
+11,Northpointe Risk Models,2016,,,,,,,,,project_author,pass1,False
+12,Common Biases of Vector Embeddings,2016,,,,,,,,,project_author,pass1,False
+13,High-Toxicity Assessed on Text Involving Women and Minority Groups,2017,,,,,,,,,project_author,pass1,False
+14,Biased Sentiment Analysis,2017,,,,,,,,,project_author,pass1,False
+16,Images of Black People Labeled as Gorillas,2015,,,,,,,,,project_author,pass1,False
+17,Inappropriate Gmail Smart Reply Suggestions,2015,,,,,,,,,project_author,pass1,False
+18,Gender Biases of Google Image Search,2015,,,,,,,,,project_author,pass1,False
+19,Sexist and Racist Google Adsense Advertisements,2013,,,,,,,,,project_author,pass1,False
+20,A Collection of Tesla Autopilot-Involved Crashes,2016,,,,,,,,,project_author,pass1,False
+21,Tougher Turing Test Exposes Chatbots’ Stupidity (migrated to Issue),2016,,,,,,,,,project_author,pass1,False
+22,Waze Navigates Motorists into Wildfires,2017,,,,,,,,,project_author,pass1,False
+23,Las Vegas Self-Driving Bus Involved in Accident,2017,,,,,,,,,project_author,pass1,False
+24,Robot kills worker at German Volkswagen plant,2014,,,,,,,,,project_author,pass1,False
+25,"Google and Delphi Self-Driving Prototypes Allegedly Involved in Near-Miss on San Antonio Road, Palo Alto",2015,,,,,,,,,project_author,pass1,False
+26,Hackers Break Apple Face ID,2017,,,,,,,,,project_author,pass1,False
+28,2010 Market Flash Crash,2010,,,,,,,,,project_author,pass1,False
+29,Image Classification of Battle Tanks,2011,,,,,,,,,project_author,pass1,False
+30,Poor Performance of Tesla Factory Robots,2016,,,,,,,,,project_author,pass1,False
+31,Driverless Train in Delhi Crashes due to Braking Failure,2017,,,,,,,,,project_author,pass1,False
+32,Identical Twins Can Open Apple FaceID Protected Devices,2017,,,,,,,,,project_author,pass1,False
+33,Amazon Alexa Plays Loud Music when Owner is Away,2017,,,,,,,,,project_author,pass1,False
+34,Amazon Alexa Responding to Environmental Inputs,2015,,,,,,,,,project_author,pass1,False
+35,Employee Automatically Terminated by Computer Program,2014,,,,,,,,,project_author,pass1,False
+36,Picture of Woman on Side of Bus Shamed for Jaywalking,2018,,,,,,,,,project_author,pass1,False
+37,Amazon’s Experimental Hiring Tool Allegedly Displayed Gender Bias in Candidate Rankings,2016,,,,,,,,,project_author,pass1,False
+38,Game AI System Produces Imbalanced Game,2016,,,,,,,,,project_author,pass1,False
+39,Deepfake Obama Introduction of Deepfakes,2017,,,,,,,,,project_author,pass1,False
+40,COMPAS Algorithm Reportedly Performs Poorly in Crime Recidivism Prediction,2016,,,,,,,,,project_author,pass1,False
+41,All Image Captions Produced are Violent,2018,,,,,,,,,project_author,pass1,False
+45,Defamation via AutoComplete,2011,,,,,,,,,project_author,pass1,False
+46,Nest Smoke Alarm Erroneously Stops Alarming,2014,,,,,,,,,project_author,pass1,False
+47,LinkedIn Search Prefers Male Names,2016,,,,,,,,,project_author,pass1,False
+48,Passport checker Detects Asian man's Eyes as Closed,2016,,,,,,,,,project_author,pass1,False
+49,AI Beauty Judge Did Not Like Dark Skin,2016,,,,,,,,,project_author,pass1,False
+50,The DAO Hack,2016,,,,,,,,,project_author,pass1,False
+51,Security Robot Rolls Over Child in Mall,2016,,,,,,,,,project_author,pass1,False
+52,Tesla on AutoPilot Killed Driver in Crash in Florida while Watching Movie,2016,,,,,,,,,project_author,pass1,False
+53,Biased Google Image Results,2016,,,,,,,,,project_author,pass1,False
+54,Predictive Policing Biases of PredPol,2015,,,,,,,,,project_author,pass1,False
+55,Alexa Plays Pornography Instead of Kids Song,2016,,,,,,,,,project_author,pass1,False
+56,AI-Designed Phone Cases Are Unexpected,2017,,,,,,,,,project_author,pass1,False
+57,Australian Automated Debt Assessment System Issued False Notices to Thousands,2015,,,,,,,,,project_author,pass1,False
+58,Russian Chatbot Supports Stalin and Violence,2017,,,,,,,,,project_author,pass1,False
+59,Gender Biases in Google Translate,2017,,,,,,,,,project_author,pass1,False
+60,FaceApp Racial Filters,2017,,,,,,,,,project_author,pass1,False
+61,Overfit Kaggle Models Discouraged Data Science Competitors,2017,,,,,,,,,project_author,pass1,False
+62,Bad AI-Written Christmas Carols,2017,,,,,,,,,project_author,pass1,False
+63,Google Photo Merge Decapitates Subject,2018,,,,,,,,,project_author,pass1,False
+64,Customer Service Robot Scares Away Customers,2018,,,,,,,,,project_author,pass1,False
+65,Reinforcement Learning Reward Functions in Video Games,2016,,,,,,,,,project_author,pass1,False
+66,Chinese Chatbots Question Communist Party,2017,,,,,,,,,project_author,pass1,False
+67,Sleeping Driver on Tesla AutoPilot,2018,,,,,,,,,project_author,pass1,False
+68,Security Robot Drowns Itself in a Fountain,2017,,,,,,,,,project_author,pass1,False
+69,Worker killed by robot in welding accident at car parts factory in India,2015,,,,,,,,,project_author,pass1,False
+70,Self-driving cars in winter,2016,,,,,,,,,project_author,pass1,False
+71,Google Waymo Vehicle and Bus Allegedly Collide in California,2016,,,,,,,,,project_author,pass1,False
+72,"Facebook translates 'good morning' into 'attack them', leading to arrest",2017,,,,,,,,,project_author,pass1,False
+73,Is Pokémon Go racist? How the app may be redlining communities of color,2016,,,,,,,,,project_author,pass1,False
+74,Detroit Police Wrongfully Arrested Black Man Due To Faulty FRT,2020,,,,,,,,,project_author,pass1,False
+75,Google Instant's Allegedly 'Anti-Semitic' Results Lead To Lawsuit In France,2012,,,,,,,,,project_author,pass1,False
+76,Live facial recognition is tracking kids suspected of being criminals,2020,,,,,,,,,project_author,pass1,False
+77,Knightscope's Park Patrol Robot Ignored Bystander Pressing Emergency Button to Alert Police about Fight,2019,,,,,,,,,project_author,pass1,False
+78,International Baccalaureate’s 2020 Calculated-Grades Model Reportedly Lowered Students' Scores and College Prospects,2020,,,,,,,,,project_author,pass1,False
+80,AI mistakes referee’s bald head for football — hilarity ensued,2020,,,,,,,,,project_author,pass1,False
+81,"Researchers find evidence of racial, gender, and socioeconomic bias in chest X-ray classifiers",2020,,,,,,,,,project_author,pass1,False
+82,#LekkiMassacre: Why Facebook labelled content from October 20 incident ‘false’,2020,,,,,,,,,project_author,pass1,False
+83,AI Spam Filters Allegedly Block Legitimate Emails Based on Biased Keyword Detection,2020,,,,,,,,,project_author,pass1,False
+84,"Tiny Changes Let False Claims About COVID-19, Voting Evade Facebook Fact Checks",2020,,,,,,,,,project_author,pass1,False
+85,"AI attempts to ease fear of robots, blurts out it can’t ‘avoid destroying humankind’",2020,,,,,,,,,project_author,pass1,False
+86,Ireland's 2020 Leaving Certificate Calculated-Grades Model Reportedly Issued Incorrect Scores to Thousands of Students,2020,,,,,,,,,project_author,pass1,False
+87,UK passport photo checker shows bias against dark-skinned women,2020,,,,,,,,,project_author,pass1,False
+88,"""Jewish Baby Strollers"" Provided Anti-Semitic Google Images, Allegedly Resulting from Hate Speech Campaign",2017,,,,,,,,,project_author,pass1,False
+89,The Christchurch shooter and YouTube’s radicalization trap,2019,,,,,,,,,project_author,pass1,False
+91,Frontline workers protest at Stanford after hospital distributed vaccine to administrators,2020,,,,,,,,,project_author,pass1,False
+92,Apple Card's Credit Assessment Algorithm Allegedly Discriminated against Women,2019,,,,,,,,,project_author,pass1,False
+93,HUD charges Facebook with enabling housing discrimination,2018,,,,,,,,,project_author,pass1,False
+94,Court Rules Deliveroo Used 'Discriminatory' Algorithm,2020,,,,,,,,,project_author,pass1,False
+95,Job Screening Service Halts Facial Analysis of Applicants,2019,,,,,,,,,project_author,pass1,False
+96,Houston ISD's EVAAS Teacher-Evaluation System Reportedly Put Teachers' Jobs at Risk Through Unverifiable Scores,2017,,,,,,,,,project_author,pass1,False
+97,Tesla Autopilot Mistakes Red Letters on Flag for Red Traffic Lights,2020,,,,,,,,,project_author,pass1,False
+98,N.Y.P.D. Robot Dog’s Run Is Cut Short After Fierce Backlash,2021,,,,,,,,,project_author,pass1,False
+99,Major Universities Are Reportedly Using Race as a 'High Impact Predictor' of Student Success,2012,,,,,,,,,project_author,pass1,False
+100,How French welfare services are creating ‘robo-debt’,2021,,,,,,,,,project_author,pass1,False
+101,Dutch Families Wrongfully Accused of Tax Fraud Due to Discriminatory Algorithm,2018,,,,,,,,,project_author,pass1,False
+102,"Personal voice assistants struggle with black voices, new study shows",2020,,,,,,,,,project_author,pass1,False
+103,Twitter’s Image Cropping Tool Allegedly Showed Gender and Racial Bias,2020,,,,,,,,,project_author,pass1,False
+104,"California's Algorithm Considered ZIP Codes in Vaccine Distribution, Allegedly Excluding Low-Income Neighborhoods and Communities of Color",2021,,,,,,,,,project_author,pass1,False
+105,"Tesla Model 3 on Autopilot Crashed into a Ford Explorer Pickup, Killing a Fifteen-Year-Old in California",2019,,,,,,,,,project_author,pass1,False
+106,Korean Chatbot Luda Reportedly Made Offensive Remarks Towards Minority Groups in South Korea,2020,,,,,,,,,project_author,pass1,False
+107,"Chinese Tech Firms Allegedly Developed Facial Recognition to Identify People by Race, Targeting Uyghur Muslims",2018,,,,,,,,,project_author,pass1,False
+108,Skating Rink’s Facial Recognition Cameras Misidentified Black Teenager as Banned Troublemaker,2021,,,,,,,,,project_author,pass1,False
+109,PimEyes's Facial Recognition AI Allegedly Lacked Safeguards to Prevent Itself from Being Abused,2017,,,,,,,,,project_author,pass1,False
+110,Arkansas's Opaque Algorithm to Allocate Health Care Excessively Cut Down Hours for Beneficiaries,2016,,,,,,,,,project_author,pass1,False
+111,Amazon Flex Drivers Allegedly Fired via Automated Employee Evaluations,2015,,,,,,,,,project_author,pass1,False
+112,Police Departments Reported ShotSpotter as Unreliable and Wasteful,2012,,,,,,,,,project_author,pass1,False
+113,"Facebook's AI Put ""Primates"" Label on Video Featuring Black Men",2020,,,,,,,,,project_author,pass1,False
+114,Amazon's Rekognition Falsely Matched Members of Congress to Mugshots,2018,,,,,,,,,project_author,pass1,False
+115,Genderify’s AI to Predict a Person’s Gender Revealed by Free API Users to Exhibit Bias,2020,,,,,,,,,project_author,pass1,False
+116,Amazon's AI Cameras Incorrectly Penalized Delivery Drivers for Mistakes They Did Not Make,2021,,,,,,,,,project_author,pass1,False
+117,"TikTok's ""Suggested Accounts"" Algorithm Allegedly Reinforced Racial Bias through Feedback Loops",2020,,,,,,,,,project_author,pass1,False
+118,OpenAI's GPT-3 Associated Muslims with Violence,2020,,,,,,,,,project_author,pass1,False
+119,Xsolla Employees Fired by CEO Allegedly via Big Data Analytics of Work Activities,2021,,,,,,,,,project_author,pass1,False
+120,Philosophy AI Allegedly Used To Generate Mixture of Innocent and Harmful Reddit Posts,2020,,,,,,,,,project_author,pass1,False
+121,Autonomous Kargu-2 Drone Allegedly Remotely Used to Hunt down Libyan Soldiers,2020,,,,,,,,,project_author,pass1,False
+122,"Facebook’s ""Tag Suggestions"" Allegedly Stored Biometric Data without User Consent",2015,,,,,,,,,project_author,pass1,False
+123,Epic Systems’s Sepsis Prediction Algorithms Revealed to Have High Error Rates on Seriously Ill Patients,2021,,,,,,,,,project_author,pass1,False
+124,Optum Algorithmic Health Risk Scores Reportedly Underestimated Black Patients' Needs,2019,,,,,,,,,project_author,pass1,False
+125,Amazon’s Robotic Fulfillment Centers Have Higher Serious Injury Rates,2020,,,,,,,,,project_author,pass1,False
+126,"Three Robots Collided, Sparking Fire in a Grocer's Warehouse in UK",2021,,,,,,,,,project_author,pass1,False
+127,Microsoft’s Algorithm Allegedly Selected Photo of the Wrong Mixed-Race Person Featured in a News Story,2020,,,,,,,,,project_author,pass1,False
+128,"Tesla Sedan on Autopilot Reportedly Drove Over Dividing Curb in Washington, Resulting in Minor Vehicle Damage",2017,,,,,,,,,project_author,pass1,False
+129,"Facebook's Automated Tools Failed to Adequately Remove Hate Speech, Violence, and Incitement",2021,,,,,,,,,project_author,pass1,False
+131,Proctoring Algorithm in Online California Bar Exam Flagged an Unusually High Number of Alleged Cheaters,2020,,,,,,,,,project_author,pass1,False
+132,TikTok’s Content Moderation Allegedly Failed to Adequately Take down Videos Promoting Eating Disorders,2020,,,,,,,,,project_author,pass1,False
+133,Online Trolls Allegedly Abused TikTok’s Automated Content Reporting System to Discriminate against Marginalized Creators,2020,,,,,,,,,project_author,pass1,False
+134,"Robot in Chinese Shopping Mall Fell off the Escalator, Knocking down Passengers",2020,,,,,,,,,project_author,pass1,False
+135,UT Austin's GRADE Algorithm Reportedly Reduced Review of Lower-Scored PhD Applicants Amid Bias Concerns,2012,,,,,,,,,project_author,pass1,False
+136,"Brand Safety Tech Firms Falsely Claimed Use of AI, Blocking Ads Using Simple Keyword Lists",2020,,,,,,,,,project_author,pass1,False
+137,"Israeli Tax Authority Reportedly Used an Opaque Automated System to Issue a Fine, Declining to Explain or Disclose the Underlying Calculation",2021,,,,,,,,,project_author,pass1,False
+138,University of Illinois' Proctorio Remote-Proctoring Deployment Reportedly Raised Student Rights Concerns,2020,,,,,,,,,project_author,pass1,False
+139,Amazon’s Search and Recommendation Algorithms Found by Auditors to Have Boosted Products That Contained Vaccine Misinformation,2021,,,,,,,,,project_author,pass1,False
+140,University of Toronto's ProctorU Deployment Reportedly Disadvantaged BIPOC Students During Exam Check-Ins,2020,,,,,,,,,project_author,pass1,False
+141,California Police Turned on Music to Allegedly Trigger Instagram’s DCMA to Avoid Being Live-Streamed,2021,,,,,,,,,project_author,pass1,False
+142,Facebook's Advertisement Moderation System Allegedly Routinely Misidentified Adaptive Fashion Products as Medical Equipment and Blocked Their Sellers,2021,,,,,,,,,project_author,pass1,False
+143,Facebook’s and Twitter's Automated Content Moderation Reportedly Failed to Effectively Enforce Violation Rules for Small Language Groups,2021,,,,,,,,,project_author,pass1,False
+144,YouTube's AI Mistakenly Banned Chess Channel over Chess Language Misinterpretation,2020,,,,,,,,,project_author,pass1,False
+145,Tesla's Autopilot Misidentified the Moon as Yellow Stop Light,2021,,,,,,,,,project_author,pass1,False
+146,"Research Prototype AI, Delphi, Reportedly Gave Racially Biased Answers on Ethics",2021,,,,,,,,,project_author,pass1,False
+147,Reported AI-Cloned Voice Used to Deceive Hong Kong Bank Manager in Purported $35 Million Fraud Scheme,2020,,,,,,,,,project_author,pass1,False
+148,Web Accessibility Vendors Allegedly Falsely Claimed to Provide Compliance Using AI,2021,,,,,,,,,project_author,pass1,False
+149,Zillow Shut Down Zillow Offers Division Allegedly Due to Predictive Pricing Tool's Insufficient Accuracy,2021,,,,,,,,,project_author,pass1,False
+150,"Swedish Contraceptive App, Natural Cycles, Allegedly Failed to Correctly Map Menstrual Cycle",2018,,,,,,,,,project_author,pass1,False
+151,California Regulator Suspended Pony.ai's Driverless Testing Permit Following a Non-Fatal Collision,2021,,,,,,,,,project_author,pass1,False
+152,"SoftBank's Humanoid Robot, Pepper, Reportedly Frequently Made Errors, Prompting Dismissal",2021,,,,,,,,,project_author,pass1,False
+153,"Tesla Driver on Autopilot Ran a Red Light, Crashing into a Car and Killing Two People in Los Angeles",2019,,,,,,,,,project_author,pass1,False
+155,Google Maps Allegedly Directed Sierra Nevada Travelers to Dangerous Roads amid Winter Storm,2021,,,,,,,,,project_author,pass1,False
+157,"Amazon's Monitoring System Allegedly Pushed Delivery Drivers to Prioritize Speed over Safety, Leading to Crash",2021,,,,,,,,,project_author,pass1,False
+158,Remote Proctoring Facial-Detection Software Reportedly Failed to Detect Black Student During Lab Quiz,2021,,,,,,,,,project_author,pass1,False
+159,Tesla Autopilot’s Lane Recognition Allegedly Vulnerable to Adversarial Attacks,2019,,,,,,,,,project_author,pass1,False
+160,Alexa Recommended Dangerous TikTok Challenge to Ten-Year-Old Girl,2021,,,,,,,,,project_author,pass1,False
