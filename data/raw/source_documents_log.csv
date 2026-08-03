@@ -1,7 +1,7 @@
 document_type,source_name,source_url,accessed_date,snapshot_date,notes
-snapshot_page,AI Incident Database snapshots page,https://incidentdatabase.ai/research/snapshots/,2026-07-29,2026-07-27,Used to verify the latest stable weekly snapshot and exact download link.
-snapshot_archive,backup-20260727110451.tar.bz2,https://pub-72b2b2fc36ec423189843747af98f80e.r2.dev/backup-20260727110451.tar.bz2,2026-07-29,2026-07-27,Official AIID backup archive used as the reproducible raw source.
-paper_abs,arXiv abstract page,https://arxiv.org/abs/2206.07635,2026-07-29,,Paper metadata and abstract.
-paper_pdf,arXiv PDF,https://arxiv.org/pdf/2206.07635,2026-07-29,,Used for application-area and ethics-issue reference counts.
-paper_hicss,ScholarSpace HICSS paper page,https://scholarspace.manoa.hawaii.edu/items/5c4f0c5c-427b-4e36-8d71-94f3e70934e3,2026-07-29,,Venue landing page for the HICSS version of the paper.
-source_repo,AI Incident Database GitHub repository,https://github.com/responsible-ai-collaborative/aiid,2026-07-29,,Reference repository for database structure and provenance.
+snapshot_page,AI Incident Database snapshots page,https://incidentdatabase.ai/research/snapshots/,2026-08-03,2026-07-27,Used to verify the latest stable weekly snapshot and exact download link.
+snapshot_archive,backup-20260727110451.tar.bz2,https://pub-72b2b2fc36ec423189843747af98f80e.r2.dev/backup-20260727110451.tar.bz2,2026-08-03,2026-07-27,Official AIID backup archive used as the reproducible raw source.
+paper_abs,arXiv abstract page,https://arxiv.org/abs/2206.07635,2026-08-03,,Paper metadata and abstract.
+paper_pdf,arXiv PDF,https://arxiv.org/pdf/2206.07635,2026-08-03,,Used for application-area and ethics-issue reference counts.
+paper_hicss,ScholarSpace HICSS paper page,https://scholarspace.manoa.hawaii.edu/items/5c4f0c5c-427b-4e36-8d71-94f3e70934e3,2026-08-03,,Venue landing page for the HICSS version of the paper.
+source_repo,AI Incident Database GitHub repository,https://github.com/responsible-ai-collaborative/aiid,2026-08-03,,Reference repository for database structure and provenance.
