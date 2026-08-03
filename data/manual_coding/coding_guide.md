@@ -4,7 +4,8 @@ This guide applies the paper's published taxonomy to a reproducible AIID sample.
 
 Important framing:
 - The original paper derived the taxonomy through conventional content analysis.
-- This project applies the published taxonomy through directed content analysis.
+- This project applies the published taxonomy through LLM-assisted directed coding.
+- AI-assisted coding suggestions were reviewed and accepted by the project author before retaining labels.
 - Application area is coded as a single primary label.
 - Ethics issue is coded as multi-label.
 - Use `Other or unclear` only when the incident genuinely does not fit a paper category with confidence.
@@ -105,4 +106,4 @@ Keep notes short and practical:
 
 ## Reliability Note
 
-This is a single-author portfolio workflow. It does not reproduce the paper's two-coder reliability design. A second pass workbook is included as a quality-check scaffold, but it is not equivalent to intercoder reliability.
+This is a single-author portfolio workflow. It does not reproduce the paper's two-coder reliability design. No second independent coding pass was completed, so this project does not report intercoder reliability or self-agreement.

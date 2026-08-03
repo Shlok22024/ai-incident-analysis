@@ -1,4 +1,4 @@
-"""Create blank manual-coding workbooks from the selected incident sample."""
+"""Create blank directed-coding workbooks from the selected incident sample."""
 
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ def main() -> None:
     build_template(sample, coder="project_author", coding_pass="pass2").to_csv(PASS2_PATH, index=False)
 
     print(
-        "Saved blank manual coding workbooks to "
+        "Saved blank directed-coding workbooks to "
         f"{WORKBOOK_PATH.relative_to(ROOT)} and {PASS2_PATH.relative_to(ROOT)}."
     )
 

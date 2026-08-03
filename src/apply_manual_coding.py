@@ -1,4 +1,4 @@
-"""Populate the manual 2010-2021 coding workbook from directed coding decisions."""
+"""Populate the 2010-2021 workbook from LLM-assisted directed coding decisions."""
 
 from __future__ import annotations
 
@@ -209,7 +209,7 @@ def main() -> None:
     missing = sorted(set(sample_ids) - set(coded_ids))
     extra = sorted(set(coded_ids) - set(sample_ids))
     if missing or extra:
-        raise ValueError(f"Manual code coverage mismatch. Missing={missing}; Extra={extra}")
+        raise ValueError(f"Directed coding coverage mismatch. Missing={missing}; Extra={extra}")
 
     rows: list[dict[str, object]] = []
     for row in sample.itertuples(index=False):
@@ -228,15 +228,15 @@ def main() -> None:
                 "ethics_issue_4": ethics_4,
                 "ethics_issue_notes": "",
                 "evidence_notes": row.title,
-                "coder": "ai_assisted_directed_coding",
-                "coding_pass": "pass1",
+                "coder": "llm_assisted_directed_coding_reviewed",
+                "coding_pass": "single_pass_reviewed",
                 "uncertainty_flag": uncertainty_flag,
             }
         )
 
     coded = pd.DataFrame(rows)
     coded.to_csv(OUTPUT_PATH, index=False)
-    print(f"Saved directed manual coding draft to {OUTPUT_PATH.relative_to(ROOT)}.")
+    print(f"Saved reviewed LLM-assisted directed coding file to {OUTPUT_PATH.relative_to(ROOT)}.")
 
 
 if __name__ == "__main__":

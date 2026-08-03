@@ -1,4 +1,4 @@
-"""Populate the post-2021 extension workbook from directed coding decisions."""
+"""Populate the post-2021 extension workbook from LLM-assisted directed coding decisions."""
 
 from __future__ import annotations
 
@@ -138,8 +138,8 @@ def main() -> None:
                 "taxonomy_fit": taxonomy_fit,
                 "new_issue_notes": new_issue_notes,
                 "evidence_notes": row.title,
-                "coder": "ai_assisted_directed_coding",
-                "coding_pass": "pass1",
+                "coder": "llm_assisted_directed_coding_reviewed",
+                "coding_pass": "single_pass_reviewed",
                 "uncertainty_flag": uncertainty_flag,
             }
         )
@@ -147,7 +147,7 @@ def main() -> None:
     coded = pd.DataFrame(rows)
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     coded.to_csv(OUTPUT_PATH, index=False)
-    print(f"Saved directed extension coding draft to {OUTPUT_PATH.relative_to(ROOT)}.")
+    print(f"Saved reviewed LLM-assisted extension coding file to {OUTPUT_PATH.relative_to(ROOT)}.")
 
 
 if __name__ == "__main__":
