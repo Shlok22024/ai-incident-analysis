@@ -1,4 +1,4 @@
-"""Build manual-coding summary tables for the AI incident analysis project."""
+"""Build directed-coding summary tables for the AI incident analysis project."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ ETHICS_SUMMARY_PATH = PROCESSED_DIR / "ethics_issue_summary.csv"
 GEOGRAPHIC_SUMMARY_PATH = PROCESSED_DIR / "geographic_summary.csv"
 PAPER_APP_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_application_areas.csv"
 PAPER_ETHICS_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_ethics_issues.csv"
-PAPER_NAMED_CHECKS_PATH = PROCESSED_DIR / "paper_named_incident_checks.csv"
+PAPER_NAMED_MISMATCH_PATH = PROCESSED_DIR / "paper_named_incident_id_mismatch_check.csv"
 PRE_POST_SUMMARY_PATH = PROCESSED_DIR / "pre_post_genai_summary.csv"
 POST_2021_TAXONOMY_FIT_PATH = PROCESSED_DIR / "post_2021_taxonomy_fit_summary.csv"
 SUMMARY_STATS_PATH = PROCESSED_DIR / "summary_stats.md"
@@ -46,7 +46,7 @@ COMPARE_ETHICS_ISSUES = [
     "Physical safety",
 ]
 
-NAMED_INCIDENT_CHECKS: list[dict[str, object]] = [
+PAPER_NAMED_REFERENCES: list[dict[str, object]] = [
     {"incident_id": 5, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
     {"incident_id": 63, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
     {"incident_id": 64, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
@@ -117,6 +117,25 @@ NAMED_INCIDENT_CHECKS: list[dict[str, object]] = [
     {"incident_id": 92, "paper_category_type": "ethics_issue", "paper_category": "Mental health"},
     {"incident_id": 127, "paper_category_type": "ethics_issue", "paper_category": "Mental health"},
 ]
+
+KNOWN_PAPER_EXAMPLES = {
+    3: "Paper Incident 3 is described as a Starbucks worker monitoring example.",
+    5: "Paper Incident 5 is cited as an intelligent service robots example.",
+    11: "Paper Incident 11 is described as the Uber self-driving fatality example.",
+    14: "Paper Incident 14 is cited as a language/vision example.",
+    28: "Paper Incident 28 is described as an iPhone Face ID bypass example.",
+    46: "Paper Incident 46 is described as a New Zealand passport checker example.",
+    63: "Paper Incident 63 is cited as an intelligent service robots example.",
+    64: "Paper Incident 64 is cited as an intelligent service robots example.",
+    70: "Paper Incident 70 is discussed in the paper's authentication-process examples.",
+    91: "Paper Incident 91 is cited as an AI supervision example.",
+    114: "Paper Incident 114 is cited as an intelligent service robots example.",
+    123: "Paper Incident 123 is cited as an AI supervision example.",
+    131: "Paper Incident 131 is cited as an AI supervision example.",
+    133: "Paper Incident 133 is discussed in the paper's authentication-process examples.",
+    134: "Paper Incident 134 is cited as a language/vision example.",
+    138: "Paper Incident 138 is discussed in the paper's authentication-process examples.",
+}
 
 
 def load_coding_workbook(path: Path) -> pd.DataFrame:
@@ -197,74 +216,74 @@ def build_paper_comparison(
     ]
 
 
-def format_project_category(row: pd.Series, paper_category_type: str) -> str:
-    if paper_category_type == "application_area":
-        return str(row["application_area"])
-    return "; ".join(row["ethics_issues"])
+def summarize_anchor_context(rows: list[dict[str, object]]) -> str:
+    parts = [f"{row['paper_category_type']}: {row['paper_category']}" for row in rows]
+    return "; ".join(parts)
 
 
-def build_notes(
-    title: str,
+def build_mapping_note(
+    paper_incident_number: int,
+    current_title: str,
     in_cleaned_snapshot: bool,
-    in_manual_sample: bool,
-    agreement: str,
-) -> str:
+    anchor_context: str,
+) -> tuple[str, str]:
     if not in_cleaned_snapshot:
-        return "Incident ID was not present in the current cleaned public snapshot, so this paper anchor could not be checked."
-    if not in_manual_sample:
-        return f"Current snapshot title: {title}. Present in the public snapshot but outside the reproducible 150-incident manual sample."
-    if agreement == "Agree":
-        return f"Current snapshot title: {title}. Manual directed coding matched the paper-named category on this checked incident."
+        return (
+            "Unable to verify",
+            "The paper's incident number could not be checked against the current cleaned snapshot because no matching AIID incident ID was present.",
+        )
+
+    if paper_incident_number in {3, 11, 28, 46}:
+        example_text = KNOWN_PAPER_EXAMPLES[paper_incident_number]
+        return (
+            "Does not map cleanly",
+            f"{example_text} Current AIID incident ID {paper_incident_number} is '{current_title}', so the paper's numbering does not line up with the current public ID space.",
+        )
+
+    example_text = KNOWN_PAPER_EXAMPLES.get(
+        paper_incident_number,
+        f"Paper Incident {paper_incident_number} was cited in the paper's results discussion.",
+    )
     return (
-        f"Current snapshot title: {title}. The current public snapshot and this project's coding do not match the paper-named "
-        "category, which likely reflects AIID drift, different incident descriptions, or sample-selection differences."
+        "ID space mismatch likely",
+        f"{example_text} Current AIID incident ID {paper_incident_number} is '{current_title}'. This suggests the paper used internal sequence numbers for its 150-case sample rather than stable public AIID IDs. Paper context: {anchor_context}.",
     )
 
 
-def build_named_incident_checks(manual: pd.DataFrame, cleaned: pd.DataFrame, sample_ids: set[int]) -> pd.DataFrame:
-    manual_lookup = manual.set_index("incident_id")
+def build_named_incident_mapping_attempts(cleaned: pd.DataFrame) -> pd.DataFrame:
     cleaned_lookup = cleaned.set_index("incident_id")
 
+    grouped_references: dict[int, list[dict[str, object]]] = {}
+    for reference in PAPER_NAMED_REFERENCES:
+        grouped_references.setdefault(int(reference["incident_id"]), []).append(reference)
+
     rows: list[dict[str, object]] = []
-    for check in NAMED_INCIDENT_CHECKS:
-        incident_id = int(check["incident_id"])
-        paper_category_type = str(check["paper_category_type"])
-        paper_category = str(check["paper_category"])
-        in_cleaned_snapshot = incident_id in cleaned_lookup.index
-        in_manual_sample = incident_id in sample_ids
-
-        project_category = ""
-        agreement = "Not checked"
-        title = ""
-
-        if in_cleaned_snapshot:
-            title = str(cleaned_lookup.loc[incident_id, "title"])
-
-        if in_manual_sample:
-            manual_row = manual_lookup.loc[incident_id]
-            project_category = format_project_category(manual_row, paper_category_type)
-            if paper_category_type == "application_area":
-                agreement = "Agree" if project_category == paper_category else "Disagree"
-            else:
-                agreement = "Agree" if paper_category in manual_row["ethics_issues"] else "Disagree"
-        elif in_cleaned_snapshot:
-            agreement = "Outside sample"
-        else:
-            agreement = "Missing from snapshot"
-
+    for paper_incident_number, references in grouped_references.items():
+        in_cleaned_snapshot = paper_incident_number in cleaned_lookup.index
+        current_title = str(cleaned_lookup.loc[paper_incident_number, "title"]) if in_cleaned_snapshot else ""
+        anchor_context = summarize_anchor_context(references)
+        mapping_status, notes = build_mapping_note(
+            paper_incident_number,
+            current_title,
+            in_cleaned_snapshot,
+            anchor_context,
+        )
         rows.append(
             {
-                "incident_id": incident_id,
-                "paper_category_type": paper_category_type,
-                "paper_category": paper_category,
-                "project_category": project_category,
-                "agreement": agreement,
-                "notes": build_notes(title, in_cleaned_snapshot, in_manual_sample, agreement),
+                "paper_incident_number": paper_incident_number,
+                "paper_described_example": KNOWN_PAPER_EXAMPLES.get(
+                    paper_incident_number,
+                    f"Paper Incident {paper_incident_number} was cited in the paper's results discussion.",
+                ),
+                "current_aiid_incident_id_checked": paper_incident_number,
+                "current_aiid_title": current_title,
+                "mapping_status": mapping_status,
+                "notes": notes,
             }
         )
 
-    checks = pd.DataFrame(rows)
-    return checks.sort_values(["paper_category_type", "paper_category", "incident_id"]).reset_index(drop=True)
+    attempts = pd.DataFrame(rows)
+    return attempts.sort_values("paper_incident_number").reset_index(drop=True)
 
 
 def share_for_single_label(frame: pd.DataFrame, column: str, category: str) -> tuple[float, int]:
@@ -339,7 +358,7 @@ def write_summary_stats(
     application_summary: pd.DataFrame,
     ethics_summary: pd.DataFrame,
     geography_summary: pd.DataFrame,
-    named_checks: pd.DataFrame,
+    mapping_attempts: pd.DataFrame,
     taxonomy_fit_summary: pd.DataFrame,
 ) -> None:
     total_incidents = manual["incident_id"].nunique()
@@ -357,11 +376,9 @@ def write_summary_stats(
         geography_summary.loc[geography_summary["geographic_location"] == "Global", "incident_count"].sum()
     )
 
-    checked_subset = named_checks.loc[named_checks["agreement"].isin(["Agree", "Disagree"])].copy()
-    agreement_count = int((checked_subset["agreement"] == "Agree").sum())
-    checked_count = len(checked_subset)
-    outside_sample_count = int((named_checks["agreement"] == "Outside sample").sum())
-    missing_snapshot_count = int((named_checks["agreement"] == "Missing from snapshot").sum())
+    mismatch_count = int((mapping_attempts["mapping_status"] == "Does not map cleanly").sum())
+    id_space_count = int((mapping_attempts["mapping_status"] == "ID space mismatch likely").sum())
+    unable_count = int((mapping_attempts["mapping_status"] == "Unable to verify").sum())
 
     extension_top_app = build_single_label_summary(extension, "application_area", "incident_count").iloc[0]
     extension_fit_lookup = taxonomy_fit_summary.set_index("taxonomy_fit")["incident_count"].to_dict()
@@ -378,18 +395,19 @@ def write_summary_stats(
         "- Paper reference point: the paper reports 89 of 150 incidents in the United States, China, and the United Kingdom.",
         f"- Global incidents in this recreation: {global_count}",
         "- Paper reference point: the paper reports 40 global incidents.",
-        f"- Named paper incident checks with in-sample project labels: {agreement_count} agrees out of {checked_count} checked anchors",
-        f"- Named paper anchors outside the reproducible sample: {outside_sample_count}",
-        f"- Named paper anchors missing from the current public snapshot: {missing_snapshot_count}",
+        f"- Paper-named incident mapping attempts recorded: {len(mapping_attempts)}",
+        f"- Does not map cleanly cases: {mismatch_count}",
+        f"- ID space mismatch likely cases: {id_space_count}",
+        f"- Mapping attempts missing from the current public snapshot: {unable_count}",
         f"- Post-2021 extension sample size: {extension['incident_id'].nunique()}",
         f"- Top post-2021 extension application area: {extension_top_app['application_area']} ({int(extension_top_app['incident_count'])} incidents, {extension_top_app['share_of_sample']:.1%})",
         f"- Post-2021 taxonomy fit counts: Fits well={int(extension_fit_lookup.get('Fits well', 0))}, Fits partially={int(extension_fit_lookup.get('Fits partially', 0))}, Does not fit well={int(extension_fit_lookup.get('Does not fit well', 0))}",
         "",
         "Method note:",
-        "This summary is based on the directed manual-coding recreation sample rather than the archived rule-based classifier attempt.",
+        "This summary is based on the reviewed LLM-assisted directed coding sample rather than the archived rule-based classifier attempt.",
         "",
         "Reliability note:",
-        "This project does not reproduce the paper's two-coder intercoder reliability design.",
+        "This project does not reproduce the paper's two-coder intercoder reliability design or a completed second coding pass.",
     ]
     SUMMARY_STATS_PATH.write_text("\n".join(summary_lines) + "\n", encoding="utf-8")
 
@@ -405,7 +423,7 @@ def save_outputs(
     geography_summary: pd.DataFrame,
     paper_app_comparison: pd.DataFrame,
     paper_ethics_comparison: pd.DataFrame,
-    named_checks: pd.DataFrame,
+    mapping_attempts: pd.DataFrame,
     pre_post_summary: pd.DataFrame,
     taxonomy_fit_summary: pd.DataFrame,
 ) -> None:
@@ -417,7 +435,7 @@ def save_outputs(
         GEOGRAPHIC_SUMMARY_PATH: geography_summary,
         PAPER_APP_COMPARISON_PATH: paper_app_comparison,
         PAPER_ETHICS_COMPARISON_PATH: paper_ethics_comparison,
-        PAPER_NAMED_CHECKS_PATH: named_checks,
+        PAPER_NAMED_MISMATCH_PATH: mapping_attempts,
         PRE_POST_SUMMARY_PATH: pre_post_summary,
         POST_2021_TAXONOMY_FIT_PATH: taxonomy_fit_summary,
         OUTPUT_TABLES_DIR / "application_area_summary.csv": application_summary,
@@ -425,7 +443,7 @@ def save_outputs(
         OUTPUT_TABLES_DIR / "geographic_summary.csv": geography_summary,
         OUTPUT_TABLES_DIR / "paper_comparison_application_areas.csv": paper_app_comparison,
         OUTPUT_TABLES_DIR / "paper_comparison_ethics_issues.csv": paper_ethics_comparison,
-        OUTPUT_TABLES_DIR / "paper_named_incident_checks.csv": named_checks,
+        OUTPUT_TABLES_DIR / "paper_named_incident_id_mismatch_check.csv": mapping_attempts,
         OUTPUT_TABLES_DIR / "pre_post_genai_summary.csv": pre_post_summary,
         OUTPUT_TABLES_DIR / "post_2021_taxonomy_fit_summary.csv": taxonomy_fit_summary,
     }
@@ -456,7 +474,7 @@ def main() -> None:
         category_type="ethics_issue",
         category_column="ethics_issue",
     )
-    named_checks = build_named_incident_checks(manual, cleaned, sample_ids)
+    mapping_attempts = build_named_incident_mapping_attempts(cleaned)
     pre_post_summary = build_period_comparison(manual, extension)
     taxonomy_fit_summary = build_taxonomy_fit_summary(extension)
 
@@ -466,7 +484,7 @@ def main() -> None:
         geography_summary,
         paper_app_comparison,
         paper_ethics_comparison,
-        named_checks,
+        mapping_attempts,
         pre_post_summary,
         taxonomy_fit_summary,
     )
@@ -476,10 +494,10 @@ def main() -> None:
         application_summary,
         ethics_summary,
         geography_summary,
-        named_checks,
+        mapping_attempts,
         taxonomy_fit_summary,
     )
-    print("Saved manual sample summaries, paper comparisons, and post-2021 extension summaries.")
+    print("Saved directed coding summaries, mapping-attempt outputs, and post-2021 extension summaries.")
 
 
 if __name__ == "__main__":
