@@ -1,2 +1,24 @@
 period,metric,category,value,notes
-pending,not_generated,post_2021_extension,,Generated after manual post-2021 extension coding is added.
+2010-2021 manual recreation,incident_count,All incidents,150.0,Count of incidents in this coded sample.
+2010-2021 manual recreation,share_of_sample,Language/vision model,0.213333,Application area count=32
+2010-2021 manual recreation,share_of_sample,Autonomous driving,0.113333,Application area count=17
+2010-2021 manual recreation,share_of_sample,AI supervision,0.133333,Application area count=20
+2010-2021 manual recreation,share_of_sample,Intelligent recommendation,0.073333,Application area count=11
+2010-2021 manual recreation,share_of_sample,Racial discrimination,0.266667,Ethics issue count=40
+2010-2021 manual recreation,share_of_sample,Privacy,0.1,Ethics issue count=15
+2010-2021 manual recreation,share_of_sample,Unethical use (illegal use),0.06,Ethics issue count=9
+2010-2021 manual recreation,share_of_sample,Mental health,0.006667,Ethics issue count=1
+2010-2021 manual recreation,share_of_sample,Physical safety,0.193333,Ethics issue count=29
+2022-2026 extension sample,incident_count,All incidents,50.0,Count of incidents in this coded sample.
+2022-2026 extension sample,share_of_sample,Language/vision model,0.34,Application area count=17
+2022-2026 extension sample,share_of_sample,Autonomous driving,0.18,Application area count=9
+2022-2026 extension sample,share_of_sample,AI supervision,0.14,Application area count=7
+2022-2026 extension sample,share_of_sample,Intelligent recommendation,0.08,Application area count=4
+2022-2026 extension sample,share_of_sample,Racial discrimination,0.14,Ethics issue count=7
+2022-2026 extension sample,share_of_sample,Privacy,0.16,Ethics issue count=8
+2022-2026 extension sample,share_of_sample,Unethical use (illegal use),0.32,Ethics issue count=16
+2022-2026 extension sample,share_of_sample,Mental health,0.04,Ethics issue count=2
+2022-2026 extension sample,share_of_sample,Physical safety,0.22,Ethics issue count=11
+2022-2026 extension sample,taxonomy_fit_share,Fits well,0.52,Count=26
+2022-2026 extension sample,taxonomy_fit_share,Fits partially,0.3,Count=15
+2022-2026 extension sample,taxonomy_fit_share,Does not fit well,0.18,Count=9

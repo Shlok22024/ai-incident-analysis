@@ -12,6 +12,9 @@
 - Named paper incident checks with in-sample project labels: 8 agrees out of 46 checked anchors
 - Named paper anchors outside the reproducible sample: 0
 - Named paper anchors missing from the current public snapshot: 3
+- Post-2021 extension sample size: 50
+- Top post-2021 extension application area: Language/vision model (17 incidents, 34.0%)
+- Post-2021 taxonomy fit counts: Fits well=26, Fits partially=15, Does not fit well=9
 
 Method note:
 This summary is based on the directed manual-coding recreation sample rather than the archived rule-based classifier attempt.

@@ -12,6 +12,7 @@ MANUAL_DIR = ROOT / "data" / "manual_coding"
 OUTPUT_TABLES_DIR = ROOT / "outputs" / "tables"
 
 MANUAL_CODING_PATH = MANUAL_DIR / "manual_coding_2010_2021.csv"
+EXTENSION_CODING_PATH = MANUAL_DIR / "manual_coding_post_2021_extension.csv"
 PAPER_COUNTS_PATH = ROOT / "data" / "raw" / "original_paper_reference_counts.csv"
 CLEANED_INCIDENTS_PATH = PROCESSED_DIR / "incidents_cleaned.csv"
 SAMPLE_PATH = PROCESSED_DIR / "manual_sample_2010_2021.csv"
@@ -23,9 +24,27 @@ PAPER_APP_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_application_areas.
 PAPER_ETHICS_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_ethics_issues.csv"
 PAPER_NAMED_CHECKS_PATH = PROCESSED_DIR / "paper_named_incident_checks.csv"
 PRE_POST_SUMMARY_PATH = PROCESSED_DIR / "pre_post_genai_summary.csv"
+POST_2021_TAXONOMY_FIT_PATH = PROCESSED_DIR / "post_2021_taxonomy_fit_summary.csv"
 SUMMARY_STATS_PATH = PROCESSED_DIR / "summary_stats.md"
 
 ETHICS_COLUMNS = ["ethics_issue_1", "ethics_issue_2", "ethics_issue_3", "ethics_issue_4"]
+
+PRE_PERIOD = "2010-2021 manual recreation"
+POST_PERIOD = "2022-2026 extension sample"
+
+COMPARE_APPLICATION_AREAS = [
+    "Language/vision model",
+    "Autonomous driving",
+    "AI supervision",
+    "Intelligent recommendation",
+]
+COMPARE_ETHICS_ISSUES = [
+    "Racial discrimination",
+    "Privacy",
+    "Unethical use (illegal use)",
+    "Mental health",
+    "Physical safety",
+]
 
 NAMED_INCIDENT_CHECKS: list[dict[str, object]] = [
     {"incident_id": 5, "paper_category_type": "application_area", "paper_category": "Intelligent service robots"},
@@ -100,15 +119,15 @@ NAMED_INCIDENT_CHECKS: list[dict[str, object]] = [
 ]
 
 
-def load_manual_coding() -> pd.DataFrame:
-    manual = pd.read_csv(MANUAL_CODING_PATH).fillna("")
-    manual["incident_id"] = manual["incident_id"].astype(int)
-    manual["year"] = manual["year"].astype(int)
-    manual["ethics_issues"] = manual[ETHICS_COLUMNS].apply(
+def load_coding_workbook(path: Path) -> pd.DataFrame:
+    frame = pd.read_csv(path).fillna("")
+    frame["incident_id"] = frame["incident_id"].astype(int)
+    frame["year"] = frame["year"].astype(int)
+    frame["ethics_issues"] = frame[ETHICS_COLUMNS].apply(
         lambda row: [value for value in row.tolist() if value],
         axis=1,
     )
-    return manual
+    return frame
 
 
 def build_single_label_summary(frame: pd.DataFrame, column: str, count_name: str) -> pd.DataFrame:
@@ -135,6 +154,14 @@ def build_ethics_summary(frame: pd.DataFrame) -> pd.DataFrame:
         .reset_index(drop=True)
     )
     summary["share_of_sample"] = (summary["incident_count"] / frame["incident_id"].nunique()).round(6)
+    return summary
+
+
+def build_taxonomy_fit_summary(frame: pd.DataFrame) -> pd.DataFrame:
+    order = ["Fits well", "Fits partially", "Does not fit well", "Unclear"]
+    summary = build_single_label_summary(frame, "taxonomy_fit", "incident_count")
+    summary["sort_order"] = summary["taxonomy_fit"].apply(lambda value: order.index(value) if value in order else len(order))
+    summary = summary.sort_values(["sort_order", "taxonomy_fit"]).drop(columns=["sort_order"]).reset_index(drop=True)
     return summary
 
 
@@ -177,7 +204,6 @@ def format_project_category(row: pd.Series, paper_category_type: str) -> str:
 
 
 def build_notes(
-    incident_id: int,
     title: str,
     in_cleaned_snapshot: bool,
     in_manual_sample: bool,
@@ -233,7 +259,7 @@ def build_named_incident_checks(manual: pd.DataFrame, cleaned: pd.DataFrame, sam
                 "paper_category": paper_category,
                 "project_category": project_category,
                 "agreement": agreement,
-                "notes": build_notes(incident_id, title, in_cleaned_snapshot, in_manual_sample, agreement),
+                "notes": build_notes(title, in_cleaned_snapshot, in_manual_sample, agreement),
             }
         )
 
@@ -241,26 +267,80 @@ def build_named_incident_checks(manual: pd.DataFrame, cleaned: pd.DataFrame, sam
     return checks.sort_values(["paper_category_type", "paper_category", "incident_id"]).reset_index(drop=True)
 
 
-def build_pending_extension_summary() -> pd.DataFrame:
-    return pd.DataFrame(
-        [
+def share_for_single_label(frame: pd.DataFrame, column: str, category: str) -> tuple[float, int]:
+    count = int((frame[column] == category).sum())
+    share = round(count / len(frame), 6)
+    return share, count
+
+
+def share_for_multi_label(frame: pd.DataFrame, category: str) -> tuple[float, int]:
+    count = int(frame["ethics_issues"].apply(lambda issues: category in issues).sum())
+    share = round(count / len(frame), 6)
+    return share, count
+
+
+def build_period_comparison(pre_frame: pd.DataFrame, post_frame: pd.DataFrame) -> pd.DataFrame:
+    period_frames = [(PRE_PERIOD, pre_frame), (POST_PERIOD, post_frame)]
+    rows: list[dict[str, object]] = []
+
+    for period, frame in period_frames:
+        rows.append(
             {
-                "period": "pending",
-                "metric": "not_generated",
-                "category": "post_2021_extension",
-                "value": "",
-                "notes": "Generated after manual post-2021 extension coding is added.",
+                "period": period,
+                "metric": "incident_count",
+                "category": "All incidents",
+                "value": len(frame),
+                "notes": "Count of incidents in this coded sample.",
             }
-        ]
-    )
+        )
+
+        for application_area in COMPARE_APPLICATION_AREAS:
+            share, count = share_for_single_label(frame, "application_area", application_area)
+            rows.append(
+                {
+                    "period": period,
+                    "metric": "share_of_sample",
+                    "category": application_area,
+                    "value": share,
+                    "notes": f"Application area count={count}",
+                }
+            )
+
+        for ethics_issue in COMPARE_ETHICS_ISSUES:
+            share, count = share_for_multi_label(frame, ethics_issue)
+            rows.append(
+                {
+                    "period": period,
+                    "metric": "share_of_sample",
+                    "category": ethics_issue,
+                    "value": share,
+                    "notes": f"Ethics issue count={count}",
+                }
+            )
+
+    taxonomy_fit_summary = build_taxonomy_fit_summary(post_frame)
+    for row in taxonomy_fit_summary.itertuples(index=False):
+        rows.append(
+            {
+                "period": POST_PERIOD,
+                "metric": "taxonomy_fit_share",
+                "category": row.taxonomy_fit,
+                "value": row.share_of_sample,
+                "notes": f"Count={int(row.incident_count)}",
+            }
+        )
+
+    return pd.DataFrame(rows)
 
 
 def write_summary_stats(
     manual: pd.DataFrame,
+    extension: pd.DataFrame,
     application_summary: pd.DataFrame,
     ethics_summary: pd.DataFrame,
     geography_summary: pd.DataFrame,
     named_checks: pd.DataFrame,
+    taxonomy_fit_summary: pd.DataFrame,
 ) -> None:
     total_incidents = manual["incident_id"].nunique()
     top_application = application_summary.iloc[0]
@@ -283,6 +363,9 @@ def write_summary_stats(
     outside_sample_count = int((named_checks["agreement"] == "Outside sample").sum())
     missing_snapshot_count = int((named_checks["agreement"] == "Missing from snapshot").sum())
 
+    extension_top_app = build_single_label_summary(extension, "application_area", "incident_count").iloc[0]
+    extension_fit_lookup = taxonomy_fit_summary.set_index("taxonomy_fit")["incident_count"].to_dict()
+
     summary_lines = [
         "# Summary Stats",
         "",
@@ -298,6 +381,9 @@ def write_summary_stats(
         f"- Named paper incident checks with in-sample project labels: {agreement_count} agrees out of {checked_count} checked anchors",
         f"- Named paper anchors outside the reproducible sample: {outside_sample_count}",
         f"- Named paper anchors missing from the current public snapshot: {missing_snapshot_count}",
+        f"- Post-2021 extension sample size: {extension['incident_id'].nunique()}",
+        f"- Top post-2021 extension application area: {extension_top_app['application_area']} ({int(extension_top_app['incident_count'])} incidents, {extension_top_app['share_of_sample']:.1%})",
+        f"- Post-2021 taxonomy fit counts: Fits well={int(extension_fit_lookup.get('Fits well', 0))}, Fits partially={int(extension_fit_lookup.get('Fits partially', 0))}, Does not fit well={int(extension_fit_lookup.get('Does not fit well', 0))}",
         "",
         "Method note:",
         "This summary is based on the directed manual-coding recreation sample rather than the archived rule-based classifier attempt.",
@@ -320,7 +406,8 @@ def save_outputs(
     paper_app_comparison: pd.DataFrame,
     paper_ethics_comparison: pd.DataFrame,
     named_checks: pd.DataFrame,
-    pending_extension_summary: pd.DataFrame,
+    pre_post_summary: pd.DataFrame,
+    taxonomy_fit_summary: pd.DataFrame,
 ) -> None:
     OUTPUT_TABLES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -331,30 +418,31 @@ def save_outputs(
         PAPER_APP_COMPARISON_PATH: paper_app_comparison,
         PAPER_ETHICS_COMPARISON_PATH: paper_ethics_comparison,
         PAPER_NAMED_CHECKS_PATH: named_checks,
-        PRE_POST_SUMMARY_PATH: pending_extension_summary,
+        PRE_POST_SUMMARY_PATH: pre_post_summary,
+        POST_2021_TAXONOMY_FIT_PATH: taxonomy_fit_summary,
         OUTPUT_TABLES_DIR / "application_area_summary.csv": application_summary,
         OUTPUT_TABLES_DIR / "ethics_issue_summary.csv": ethics_summary,
         OUTPUT_TABLES_DIR / "geographic_summary.csv": geography_summary,
         OUTPUT_TABLES_DIR / "paper_comparison_application_areas.csv": paper_app_comparison,
         OUTPUT_TABLES_DIR / "paper_comparison_ethics_issues.csv": paper_ethics_comparison,
         OUTPUT_TABLES_DIR / "paper_named_incident_checks.csv": named_checks,
-        OUTPUT_TABLES_DIR / "pre_post_genai_summary.csv": pending_extension_summary,
+        OUTPUT_TABLES_DIR / "pre_post_genai_summary.csv": pre_post_summary,
+        OUTPUT_TABLES_DIR / "post_2021_taxonomy_fit_summary.csv": taxonomy_fit_summary,
     }
     for path, frame in files_to_write.items():
         save_csv(frame, path)
 
 
 def main() -> None:
-    manual = load_manual_coding()
+    manual = load_coding_workbook(MANUAL_CODING_PATH)
+    extension = load_coding_workbook(EXTENSION_CODING_PATH)
     paper_counts = pd.read_csv(PAPER_COUNTS_PATH)
     cleaned = pd.read_csv(CLEANED_INCIDENTS_PATH).fillna("")
     sample_ids = set(pd.read_csv(SAMPLE_PATH)["incident_id"].astype(int).tolist())
 
     application_summary = build_single_label_summary(manual, "application_area", "incident_count")
     ethics_summary = build_ethics_summary(manual)
-    geography_summary = build_single_label_summary(manual, "geographic_location", "incident_count").rename(
-        columns={"geographic_location": "geographic_location"}
-    )
+    geography_summary = build_single_label_summary(manual, "geographic_location", "incident_count")
 
     paper_app_comparison = build_paper_comparison(
         application_summary,
@@ -369,7 +457,8 @@ def main() -> None:
         category_column="ethics_issue",
     )
     named_checks = build_named_incident_checks(manual, cleaned, sample_ids)
-    pending_extension_summary = build_pending_extension_summary()
+    pre_post_summary = build_period_comparison(manual, extension)
+    taxonomy_fit_summary = build_taxonomy_fit_summary(extension)
 
     save_outputs(
         application_summary,
@@ -378,16 +467,19 @@ def main() -> None:
         paper_app_comparison,
         paper_ethics_comparison,
         named_checks,
-        pending_extension_summary,
+        pre_post_summary,
+        taxonomy_fit_summary,
     )
     write_summary_stats(
         manual,
+        extension,
         application_summary,
         ethics_summary,
         geography_summary,
         named_checks,
+        taxonomy_fit_summary,
     )
-    print("Saved manual sample summaries, paper comparisons, and named incident checks.")
+    print("Saved manual sample summaries, paper comparisons, and post-2021 extension summaries.")
 
 
 if __name__ == "__main__":
