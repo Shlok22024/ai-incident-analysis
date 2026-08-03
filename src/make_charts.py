@@ -1,4 +1,4 @@
-"""Generate portfolio-friendly charts for the AI incident analysis project."""
+"""Generate manual-coding charts for the AI incident analysis project."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from matplotlib.ticker import PercentFormatter
+from matplotlib.patches import FancyBboxPatch
 
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_DIR = ROOT / "data" / "processed"
@@ -15,17 +15,28 @@ FIGURES_DIR = ROOT / "outputs" / "figures"
 
 APPLICATION_SUMMARY_PATH = PROCESSED_DIR / "application_area_summary.csv"
 ETHICS_SUMMARY_PATH = PROCESSED_DIR / "ethics_issue_summary.csv"
+GEOGRAPHIC_SUMMARY_PATH = PROCESSED_DIR / "geographic_summary.csv"
+PAPER_APP_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_application_areas.csv"
+PAPER_ETHICS_COMPARISON_PATH = PROCESSED_DIR / "paper_comparison_ethics_issues.csv"
 PRE_POST_SUMMARY_PATH = PROCESSED_DIR / "pre_post_genai_summary.csv"
-INCIDENTS_PATH = PROCESSED_DIR / "incidents_cleaned.csv"
+POST_2021_TAXONOMY_FIT_PATH = PROCESSED_DIR / "post_2021_taxonomy_fit_summary.csv"
 SUMMARY_STATS_PATH = PROCESSED_DIR / "summary_stats.md"
 
-BACKGROUND = "#f7f4ec"
-INK = "#1f2430"
-ACCENT = "#d96b3b"
-ACCENT_DARK = "#8c3b22"
-SECONDARY = "#2c6e63"
-GOLD = "#c89b3c"
-GRID = "#d8d0c3"
+BACKGROUND = "#f5f0e6"
+PANEL = "#fffaf2"
+INK = "#22252b"
+TEAL = "#2d6a67"
+ORANGE = "#cf6b3e"
+GOLD = "#b88c38"
+BRICK = "#8f3e2e"
+GRID = "#d9cebc"
+
+OBSOLETE_FIGURES = [
+    "incidents_by_year.png",
+    "pre_post_genai_comparison.png",
+    "top_application_areas.png",
+    "top_ethics_issues.png",
+]
 
 
 def set_theme() -> None:
@@ -33,7 +44,7 @@ def set_theme() -> None:
     plt.rcParams.update(
         {
             "figure.facecolor": BACKGROUND,
-            "axes.facecolor": BACKGROUND,
+            "axes.facecolor": PANEL,
             "axes.edgecolor": GRID,
             "axes.labelcolor": INK,
             "text.color": INK,
@@ -43,17 +54,23 @@ def set_theme() -> None:
             "axes.titlesize": 18,
             "axes.labelsize": 12,
             "font.size": 11,
+            "savefig.facecolor": BACKGROUND,
+            "savefig.edgecolor": BACKGROUND,
         }
     )
 
 
-def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, list[str]]:
-    application_summary = pd.read_csv(APPLICATION_SUMMARY_PATH)
-    ethics_summary = pd.read_csv(ETHICS_SUMMARY_PATH)
-    pre_post_summary = pd.read_csv(PRE_POST_SUMMARY_PATH)
-    incidents = pd.read_csv(INCIDENTS_PATH)
-    summary_stats = SUMMARY_STATS_PATH.read_text(encoding="utf-8").splitlines()
-    return application_summary, ethics_summary, pre_post_summary, incidents, summary_stats
+def load_inputs() -> dict[str, pd.DataFrame | list[str]]:
+    return {
+        "application_summary": pd.read_csv(APPLICATION_SUMMARY_PATH),
+        "ethics_summary": pd.read_csv(ETHICS_SUMMARY_PATH),
+        "geographic_summary": pd.read_csv(GEOGRAPHIC_SUMMARY_PATH),
+        "paper_app_comparison": pd.read_csv(PAPER_APP_COMPARISON_PATH),
+        "paper_ethics_comparison": pd.read_csv(PAPER_ETHICS_COMPARISON_PATH),
+        "pre_post_summary": pd.read_csv(PRE_POST_SUMMARY_PATH),
+        "taxonomy_fit_summary": pd.read_csv(POST_2021_TAXONOMY_FIT_PATH),
+        "summary_stats": SUMMARY_STATS_PATH.read_text(encoding="utf-8").splitlines(),
+    }
 
 
 def style_axes(ax: plt.Axes) -> None:
@@ -65,147 +82,160 @@ def style_axes(ax: plt.Axes) -> None:
     ax.spines["bottom"].set_color(GRID)
 
 
-def annotate_bar_counts(ax: plt.Axes, is_horizontal: bool = True, suffix: str = "") -> None:
+def annotate_horizontal(ax: plt.Axes) -> None:
     for patch in ax.patches:
-        value = patch.get_width() if is_horizontal else patch.get_height()
-        if value <= 0.01:
-            continue
-        if is_horizontal:
-            ax.text(
-                patch.get_width() + max(ax.get_xlim()[1] * 0.01, 1),
-                patch.get_y() + patch.get_height() / 2,
-                f"{int(round(value))}{suffix}",
-                va="center",
-                ha="left",
-                fontsize=10,
-                color=INK,
-            )
-        else:
-            ax.text(
-                patch.get_x() + patch.get_width() / 2,
-                patch.get_height() + max(ax.get_ylim()[1] * 0.01, 0.5),
-                f"{value:.0f}{suffix}",
-                va="bottom",
-                ha="center",
-                fontsize=10,
-                color=INK,
-            )
+        value = patch.get_width()
+        ax.text(
+            value + max(ax.get_xlim()[1] * 0.01, 0.4),
+            patch.get_y() + patch.get_height() / 2,
+            f"{int(round(value))}",
+            va="center",
+            ha="left",
+            fontsize=10,
+            color=INK,
+        )
 
 
-def chart_top_application_areas(application_summary: pd.DataFrame) -> None:
+def annotate_vertical(ax: plt.Axes) -> None:
+    for patch in ax.patches:
+        value = patch.get_height()
+        ax.text(
+            patch.get_x() + patch.get_width() / 2,
+            value + max(ax.get_ylim()[1] * 0.02, 0.3),
+            f"{int(round(value))}",
+            va="bottom",
+            ha="center",
+            fontsize=10,
+            color=INK,
+        )
+
+
+def chart_manual_application_areas(application_summary: pd.DataFrame) -> None:
     chart_data = (
         application_summary.loc[application_summary["application_area"] != "Other or unclear"]
-        .head(10)
         .sort_values("incident_count")
+        .reset_index(drop=True)
     )
 
-    fig, ax = plt.subplots(figsize=(12, 8), dpi=200)
-    sns.barplot(data=chart_data, x="incident_count", y="application_area", color=SECONDARY, ax=ax)
-    ax.set_title("Top Recreated Primary Application Areas\nExcluding 'Other or unclear'")
-    ax.set_xlabel("Incident count")
+    fig, ax = plt.subplots(figsize=(12, 8.5), dpi=200)
+    sns.barplot(data=chart_data, x="incident_count", y="application_area", color=TEAL, ax=ax)
+    ax.set_title("Manual Recreation Sample: Application Areas (2010-2021)")
+    ax.set_xlabel("Incident count in 150-incident sample")
     ax.set_ylabel("")
     style_axes(ax)
-    annotate_bar_counts(ax, is_horizontal=True)
+    annotate_horizontal(ax)
     plt.tight_layout()
-    fig.savefig(FIGURES_DIR / "top_application_areas.png", bbox_inches="tight")
+    fig.savefig(FIGURES_DIR / "manual_application_areas.png", bbox_inches="tight")
     plt.close(fig)
 
 
-def chart_top_ethics_issues(ethics_summary: pd.DataFrame) -> None:
+def chart_manual_ethics_issues(ethics_summary: pd.DataFrame) -> None:
     chart_data = (
         ethics_summary.loc[ethics_summary["ethics_issue"] != "Other or unclear"]
-        .head(8)
         .sort_values("incident_count")
+        .reset_index(drop=True)
     )
 
-    fig, ax = plt.subplots(figsize=(12, 8), dpi=200)
-    sns.barplot(data=chart_data, x="incident_count", y="ethics_issue", color=ACCENT, ax=ax)
-    ax.set_title("Top Recreated AI Incident Issues\nExcluding 'Other or unclear'")
+    fig, ax = plt.subplots(figsize=(12, 7.5), dpi=200)
+    sns.barplot(data=chart_data, x="incident_count", y="ethics_issue", color=ORANGE, ax=ax)
+    ax.set_title("Manual Recreation Sample: Ethics Issues (2010-2021)")
+    ax.set_xlabel("Incident count in 150-incident sample")
+    ax.set_ylabel("")
+    style_axes(ax)
+    annotate_horizontal(ax)
+    plt.tight_layout()
+    fig.savefig(FIGURES_DIR / "manual_ethics_issues.png", bbox_inches="tight")
+    plt.close(fig)
+
+
+def chart_manual_geography(geographic_summary: pd.DataFrame) -> None:
+    chart_data = geographic_summary.sort_values("incident_count")
+
+    fig, ax = plt.subplots(figsize=(11, 6.5), dpi=200)
+    sns.barplot(data=chart_data, x="incident_count", y="geographic_location", color=GOLD, ax=ax)
+    ax.set_title("Manual Recreation Sample: Geography (2010-2021)")
+    ax.set_xlabel("Incident count in 150-incident sample")
+    ax.set_ylabel("")
+    style_axes(ax)
+    annotate_horizontal(ax)
+    plt.tight_layout()
+    fig.savefig(FIGURES_DIR / "manual_geographic_distribution.png", bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_grouped_comparison(ax: plt.Axes, frame: pd.DataFrame, category_column: str, title: str) -> None:
+    chart_data = frame.copy().sort_values("paper_rank", ascending=False)
+    y_positions = range(len(chart_data))
+    bar_height = 0.38
+
+    ax.barh(
+        [position - bar_height / 2 for position in y_positions],
+        chart_data["paper_reported_count"],
+        height=bar_height,
+        color=BRICK,
+        label="Paper",
+    )
+    ax.barh(
+        [position + bar_height / 2 for position in y_positions],
+        chart_data["project_count"],
+        height=bar_height,
+        color=TEAL,
+        label="Project sample",
+    )
+
+    ax.set_yticks(list(y_positions))
+    ax.set_yticklabels(chart_data[category_column])
+    ax.set_title(title)
     ax.set_xlabel("Incident count")
     ax.set_ylabel("")
     style_axes(ax)
-    annotate_bar_counts(ax, is_horizontal=True)
-    plt.tight_layout()
-    fig.savefig(FIGURES_DIR / "top_ethics_issues.png", bbox_inches="tight")
-    plt.close(fig)
 
 
-def chart_incidents_by_year(incidents: pd.DataFrame) -> None:
-    year_counts = (
-        incidents.groupby("incident_year")["incident_id"]
-        .nunique()
-        .reset_index(name="incident_count")
-        .sort_values("incident_year")
+def chart_paper_comparison(
+    paper_app_comparison: pd.DataFrame,
+    paper_ethics_comparison: pd.DataFrame,
+) -> None:
+    fig, axes = plt.subplots(2, 1, figsize=(13, 14), dpi=200)
+    plot_grouped_comparison(
+        axes[0],
+        paper_app_comparison,
+        "application_area",
+        "Application Areas: Paper vs. Recreated 2010-2021 Sample",
     )
-
-    fig, ax = plt.subplots(figsize=(13, 7), dpi=200)
-    ax.plot(year_counts["incident_year"], year_counts["incident_count"], color=SECONDARY, linewidth=3)
-    ax.fill_between(year_counts["incident_year"], year_counts["incident_count"], color=SECONDARY, alpha=0.15)
-    ax.axvline(2023, color=ACCENT_DARK, linestyle="--", linewidth=2)
-    ax.text(2023.2, year_counts["incident_count"].max() * 0.92, "2023 cutoff", color=ACCENT_DARK, fontsize=11)
-    ax.set_title("Reported AI Incidents in the Cleaned Dataset by Year")
-    ax.set_xlabel("Incident year")
-    ax.set_ylabel("Incident count")
-    ax.set_xlim(year_counts["incident_year"].min(), year_counts["incident_year"].max())
-    style_axes(ax)
+    plot_grouped_comparison(
+        axes[1],
+        paper_ethics_comparison,
+        "ethics_issue",
+        "Ethics Issues: Paper vs. Recreated 2010-2021 Sample",
+    )
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 0.98))
     fig.text(
-        0.01,
-        0.01,
-        "Note: The 2026 count is partial because the snapshot was collected in July 2026.",
+        0.02,
+        0.015,
+        "Note: Counts are compared against the paper's reported totals, but the current public AIID snapshot appears to have drifted from the paper's incident IDs.",
         fontsize=10,
         color=INK,
     )
-    plt.tight_layout()
-    fig.savefig(FIGURES_DIR / "incidents_by_year.png", bbox_inches="tight")
+    plt.tight_layout(rect=(0, 0.03, 1, 0.96))
+    fig.savefig(FIGURES_DIR / "paper_comparison.png", bbox_inches="tight")
     plt.close(fig)
 
 
-def chart_pre_post_comparison(pre_post_summary: pd.DataFrame) -> None:
-    share_data = pre_post_summary.loc[pre_post_summary["metric"] == "share_of_incidents"].copy()
-    share_data["value"] = share_data["value"].astype(float) * 100
-    share_data["period"] = share_data["period"].replace(
-        {
-            "Pre-generative-AI period (before 2023)": "Before 2023",
-            "Generative-AI period (2023 onward)": "2023 onward",
-        }
+def chart_taxonomy_fit(taxonomy_fit_summary: pd.DataFrame) -> None:
+    fig, ax = plt.subplots(figsize=(10, 6.5), dpi=200)
+    ax.bar(
+        taxonomy_fit_summary["taxonomy_fit"],
+        taxonomy_fit_summary["incident_count"],
+        color=[TEAL, GOLD, ORANGE][: len(taxonomy_fit_summary)],
     )
-
-    category_order = [
-        "Language/vision or generative-AI terms",
-        "Misinformation or manipulation",
-        "Harmful content",
-        "Privacy",
-        "Discrimination",
-    ]
-    share_data["category"] = pd.Categorical(share_data["category"], categories=category_order, ordered=True)
-    share_data = share_data.sort_values("category")
-
-    fig, ax = plt.subplots(figsize=(12, 7), dpi=200)
-    sns.barplot(
-        data=share_data,
-        x="category",
-        y="value",
-        hue="period",
-        palette=[GOLD, ACCENT],
-        ax=ax,
-    )
-    ax.set_title("How the Mix of Reported Incidents Changes After 2023")
+    ax.set_title("Post-2021 Extension: How Well the Original Taxonomy Fits")
     ax.set_xlabel("")
-    ax.set_ylabel("Share of incidents")
-    ax.yaxis.set_major_formatter(PercentFormatter())
+    ax.set_ylabel("Incident count in 50-incident extension sample")
     style_axes(ax)
-    ax.legend(title="")
-    plt.setp(ax.get_xticklabels(), rotation=18, ha="right")
-    annotate_bar_counts(ax, is_horizontal=False, suffix="%")
-    fig.text(
-        0.01,
-        0.01,
-        "Note: Uses a practical 2023 cutoff and a separate language/vision or generative-AI involvement flag.",
-        fontsize=10,
-        color=INK,
-    )
+    annotate_vertical(ax)
     plt.tight_layout()
-    fig.savefig(FIGURES_DIR / "pre_post_genai_comparison.png", bbox_inches="tight")
+    fig.savefig(FIGURES_DIR / "post_2021_taxonomy_fit.png", bbox_inches="tight")
     plt.close(fig)
 
 
@@ -216,66 +246,111 @@ def extract_stat(summary_stats: list[str], prefix: str) -> str:
     return "Pending"
 
 
-def chart_summary_card(summary_stats: list[str]) -> None:
-    total_incidents = extract_stat(summary_stats, "- Total incidents analyzed")
-    top_app = extract_stat(summary_stats, "- Top recreated primary application area")
-    top_issue = extract_stat(summary_stats, "- Top recreated ethics issue label")
-    biggest_change = extract_stat(summary_stats, "- Biggest tracked post-2023 share increase")
+def extract_metric(pre_post_summary: pd.DataFrame, period: str, category: str) -> str:
+    match = pre_post_summary.loc[
+        (pre_post_summary["period"] == period)
+        & (pre_post_summary["metric"] == "share_of_sample")
+        & (pre_post_summary["category"] == category),
+        "value",
+    ]
+    if match.empty:
+        return "Pending"
+    return f"{float(match.iloc[0]) * 100:.1f}%"
+
+
+def chart_summary_card(summary_stats: list[str], pre_post_summary: pd.DataFrame) -> None:
+    total_sample = extract_stat(summary_stats, "- Manual recreation sample size")
+    top_app = extract_stat(summary_stats, "- Top application area")
+    top_issue = extract_stat(summary_stats, "- Top ethics issue")
+    taxonomy_fit = extract_stat(summary_stats, "- Post-2021 taxonomy fit counts")
+    lvm_pre = extract_metric(pre_post_summary, "2010-2021 manual recreation", "Language/vision model")
+    lvm_post = extract_metric(pre_post_summary, "2022-2026 extension sample", "Language/vision model")
+    illegal_pre = extract_metric(pre_post_summary, "2010-2021 manual recreation", "Unethical use (illegal use)")
+    illegal_post = extract_metric(pre_post_summary, "2022-2026 extension sample", "Unethical use (illegal use)")
 
     fig = plt.figure(figsize=(10, 10), dpi=200, facecolor=BACKGROUND)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.axis("off")
 
-    ax.add_patch(plt.Rectangle((0.04, 0.04), 0.92, 0.92, color="#fffaf0", ec=GRID, lw=2))
-    ax.add_patch(plt.Rectangle((0.04, 0.88), 0.92, 0.08, color=SECONDARY, ec=SECONDARY))
-    ax.text(0.07, 0.92, "What Actually Goes Wrong With AI?", fontsize=24, fontweight="bold", color="white")
-    ax.text(
-        0.07,
-        0.865,
-        "A simple reproduction and update of an AI incident database study",
-        fontsize=12,
-        color=INK,
+    ax.add_patch(
+        FancyBboxPatch(
+            (0.04, 0.04),
+            0.92,
+            0.92,
+            boxstyle="round,pad=0.012,rounding_size=0.03",
+            linewidth=2,
+            edgecolor=GRID,
+            facecolor=PANEL,
+        )
     )
+    ax.add_patch(
+        FancyBboxPatch(
+            (0.06, 0.84),
+            0.88,
+            0.1,
+            boxstyle="round,pad=0.015,rounding_size=0.03",
+            linewidth=0,
+            facecolor=TEAL,
+        )
+    )
+    ax.text(0.09, 0.89, "What Actually Goes Wrong With AI?", fontsize=24, fontweight="bold", color="white")
+    ax.text(0.09, 0.845, "Manual recreation of a qualitative AI incident study", fontsize=12, color="white")
 
-    card_text = [
-        ("Total incidents analyzed", total_incidents),
-        ("Top recreated issue label", top_issue),
-        ("Top recreated primary application area", top_app),
-        ("Biggest post-2023 shift", biggest_change),
+    cards = [
+        ("Manual sample", f"{total_sample} incidents from 2010-2021"),
+        ("Top issue", top_issue),
+        ("Top application area", top_app),
+        ("Post-2021 fit", taxonomy_fit),
     ]
 
-    y = 0.75
-    for label, value in card_text:
-        ax.text(0.08, y, label.upper(), fontsize=10, fontweight="bold", color=ACCENT_DARK)
-        ax.text(0.08, y - 0.055, value, fontsize=15, color=INK, wrap=True)
-        y -= 0.16
+    y = 0.74
+    for label, value in cards:
+        ax.text(0.09, y, label.upper(), fontsize=10, fontweight="bold", color=BRICK)
+        ax.text(0.09, y - 0.055, value, fontsize=15, color=INK, wrap=True)
+        y -= 0.14
 
-    ax.text(0.08, 0.18, "Key lesson", fontsize=12, fontweight="bold", color=SECONDARY)
+    ax.text(0.09, 0.15, "Key shifts", fontsize=12, fontweight="bold", color=TEAL)
     ax.text(
-        0.08,
-        0.11,
-        "AI harms are not one problem. In this recreated dataset, they show up as misuse,\n"
-        "bad performance, privacy issues, discrimination, safety risks, and a sharp post-2023\n"
-        "rise in incidents involving language/vision or generative-AI terms.",
+        0.09,
+        0.095,
+        f"Language/vision cases rise from {lvm_pre} to {lvm_post}.\n"
+        f"Unethical-use labels rise from {illegal_pre} to {illegal_post}.",
         fontsize=13,
         color=INK,
     )
-    ax.text(0.08, 0.05, "2026 is a partial year because the snapshot was collected in July 2026.", fontsize=10, color=INK)
+    ax.text(0.09, 0.055, "Main lesson", fontsize=12, fontweight="bold", color=TEAL)
+    ax.text(
+        0.09,
+        0.02,
+        "Older categories still explain many incidents, but generative and synthetic-media harms create visible strain.",
+        fontsize=11.5,
+        color=INK,
+    )
 
     fig.savefig(FIGURES_DIR / "portfolio_summary_card.png", bbox_inches="tight")
     plt.close(fig)
 
 
+def remove_obsolete_figures() -> None:
+    for filename in OBSOLETE_FIGURES:
+        path = FIGURES_DIR / filename
+        if path.exists():
+            path.unlink()
+
+
 def main() -> None:
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     set_theme()
-    application_summary, ethics_summary, pre_post_summary, incidents, summary_stats = load_inputs()
-    chart_top_application_areas(application_summary)
-    chart_top_ethics_issues(ethics_summary)
-    chart_incidents_by_year(incidents)
-    chart_pre_post_comparison(pre_post_summary)
-    chart_summary_card(summary_stats)
-    print("Saved five chart outputs to outputs/figures.")
+    inputs = load_inputs()
+
+    chart_manual_application_areas(inputs["application_summary"])
+    chart_manual_ethics_issues(inputs["ethics_summary"])
+    chart_manual_geography(inputs["geographic_summary"])
+    chart_paper_comparison(inputs["paper_app_comparison"], inputs["paper_ethics_comparison"])
+    chart_taxonomy_fit(inputs["taxonomy_fit_summary"])
+    chart_summary_card(inputs["summary_stats"], inputs["pre_post_summary"])
+    remove_obsolete_figures()
+    print("Saved manual chart outputs to outputs/figures.")
 
 
 if __name__ == "__main__":

@@ -74,14 +74,23 @@ An earlier version of this project tried to approximate the paper's manual codin
 I kept that attempt as an archived experiment in [experiments/rule_based_classifier_attempt/README.md](experiments/rule_based_classifier_attempt/README.md) because it helps explain why the final project uses manual coding instead.
 
 ## Charts
-The main chart files are generated into `outputs/figures/`:
+### Portfolio summary card
+![Portfolio summary card](outputs/figures/portfolio_summary_card.png)
 
-- `manual_application_areas.png`
-- `manual_ethics_issues.png`
-- `manual_geographic_distribution.png`
-- `paper_comparison.png`
-- `post_2021_taxonomy_fit.png`
-- `portfolio_summary_card.png`
+### Manual application areas
+![Manual application areas](outputs/figures/manual_application_areas.png)
+
+### Manual ethics issues
+![Manual ethics issues](outputs/figures/manual_ethics_issues.png)
+
+### Manual geographic distribution
+![Manual geographic distribution](outputs/figures/manual_geographic_distribution.png)
+
+### Paper comparison
+![Paper comparison](outputs/figures/paper_comparison.png)
+
+### Post-2021 taxonomy fit
+![Post-2021 taxonomy fit](outputs/figures/post_2021_taxonomy_fit.png)
 
 ## How to reproduce
 ```bash
